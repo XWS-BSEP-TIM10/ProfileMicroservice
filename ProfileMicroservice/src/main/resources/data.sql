@@ -1,0 +1,2 @@
+INSERT INTO users (ID, BIOGRAPHY, DATE_OF_BIRTH, EMAIL, FIRST_NAME, GENDER, LAST_NAME, PHONE_NUMBER, USERNAME)
+VALUES (1, 'aaa', '05-05-2005', 'a@a.com', 'aca', 'M', 'aca', '+32242342', 'username2');
