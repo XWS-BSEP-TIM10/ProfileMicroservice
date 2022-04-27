@@ -2,6 +2,8 @@ package com.profile.dto;
 
 public class NewUserDto {
 
+    private String uuid;
+
     private String firstName;
 
     private String lastName;
@@ -23,16 +25,12 @@ public class NewUserDto {
     public NewUserDto() {
     }
 
-    public NewUserDto(String firstName, String lastName, String email, String phoneNumber, String gender, String dateOfBirth, String username, String password, String biography) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-        this.gender = gender;
-        this.dateOfBirth = dateOfBirth;
-        this.username = username;
-        this.password = password;
-        this.biography = biography;
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public String getFirstName() {

@@ -8,9 +8,13 @@ import javax.persistence.*;
 @Table(name="users")
 public class User {
 
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(unique = true)
+    private String uuid;
 
     @Column(name = "first_name")
     private String firstName;
@@ -36,7 +40,8 @@ public class User {
     @Column(name = "biography")
     private String biography;
 
-    public User(String firstName, String lastName, String email, String phoneNumber, String gender, String dateOfBirth, String username, String biography) {
+    public User(String uuid, String firstName, String lastName, String email, String phoneNumber, String gender, String dateOfBirth, String username, String biography) {
+        this.uuid = uuid;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -48,6 +53,7 @@ public class User {
     }
 
     public User(NewUserDto dto) {
+        this.uuid = dto.getUuid();
         this.firstName = dto.getFirstName();
         this.lastName = dto.getLastName();
         this.email = dto.getEmail();
@@ -64,6 +70,14 @@ public class User {
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getUuid() {
+        return uuid;
     }
 
     public String getFirstName() {

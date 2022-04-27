@@ -30,12 +30,12 @@ public class ProfileController {
         User user = service.save(new User(dto));
         if (user == null)
             return ResponseEntity.ok(new ProfileResponseDTO(false, "failed"));
-        return ResponseEntity.ok(new ProfileResponseDTO(user.getId(), true, "sucess"));
+        return ResponseEntity.ok(new ProfileResponseDTO(user.getUuid(), true, "sucess"));
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<HttpStatus> delete(@PathVariable Long id) {
-        service.deleteById(id);
+    public ResponseEntity<HttpStatus> delete(@PathVariable String id) {
+        service.deleteByUuid(id);
         return ResponseEntity.noContent().build();
     }
 
