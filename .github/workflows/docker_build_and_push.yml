@@ -5,7 +5,7 @@ on:
       - feat/dockerfile
 
 env:
-  PROJECT_DIR: ProfileMicroService
+  PROJECT_DIR: ProfileMicroservice
   IMAGE_NAME: profile-microservice
 jobs:
   build_and_push:
