@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
 @RestController
 @RequestMapping(value = "/api/v1/profiles")
 public class ProfileController {
@@ -27,10 +30,17 @@ public class ProfileController {
 
     @PostMapping
     public ResponseEntity<ProfileResponseDTO> register(@RequestBody NewUserDto dto) {
-        User user = service.save(new User(dto));
-        if (user == null)
-            return ResponseEntity.ok(new ProfileResponseDTO(false, "failed"));
-        return ResponseEntity.ok(new ProfileResponseDTO(user.getUuid(), true, "sucess"));
+        try {
+            User newUser = new User(dto);
+            newUser.setDateOfBirth(new SimpleDateFormat("dd/MM/yyyy").parse(dto.getDateOfBirth()));
+            User savedUser = service.save(newUser);
+            if (savedUser == null)
+                return ResponseEntity.ok(new ProfileResponseDTO(false, "failed"));
+            return ResponseEntity.ok(new ProfileResponseDTO(newUser.getUuid(), true, "sucess"));
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @DeleteMapping("{id}")

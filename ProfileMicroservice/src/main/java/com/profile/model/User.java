@@ -3,11 +3,14 @@ package com.profile.model;
 import com.profile.dto.NewUserDto;
 
 import javax.persistence.*;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name="users")
 public class User {
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,10 +32,11 @@ public class User {
     private String phoneNumber;
 
     @Column(name = "gender")
-    private String gender;
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
 
     @Column(name = "date_of_birth")
-    private String dateOfBirth;
+    private Date dateOfBirth;
 
     @Column(name = "username", unique = true, nullable = false)
     private String username;
@@ -40,7 +44,15 @@ public class User {
     @Column(name = "biography")
     private String biography;
 
-    public User(String uuid, String firstName, String lastName, String email, String phoneNumber, String gender, String dateOfBirth, String username, String biography) {
+    @OneToMany
+    @JoinColumn(name = "user_id")
+    private List<Experience> experiences;
+
+    @OneToMany
+    @JoinColumn(name = "user_id")
+    private List<Interest> interests;
+
+    public User(String uuid, String firstName, String lastName, String email, String phoneNumber, Gender gender, Date dateOfBirth, String username, String biography) {
         this.uuid = uuid;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -50,6 +62,8 @@ public class User {
         this.dateOfBirth = dateOfBirth;
         this.username = username;
         this.biography = biography;
+        this.experiences = new ArrayList<>();
+        this.interests = new ArrayList<>();
     }
 
     public User(NewUserDto dto) {
@@ -58,8 +72,7 @@ public class User {
         this.lastName = dto.getLastName();
         this.email = dto.getEmail();
         this.phoneNumber = dto.getPhoneNumber();
-        this.gender = dto.getGender();
-        this.dateOfBirth = dto.getDateOfBirth();
+        this.gender = dto.getGender().equalsIgnoreCase("FEMALE") ? Gender.FEMALE : Gender.MALE;
         this.username = dto.getUsername();
         this.biography = dto.getBiography();
     }
@@ -96,12 +109,16 @@ public class User {
         return phoneNumber;
     }
 
-    public String getGender() {
+    public Gender getGender() {
         return gender;
     }
 
-    public String getDateOfBirth() {
+    public Date getDateOfBirth() {
         return dateOfBirth;
+    }
+
+    public void setDateOfBirth(Date dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
     }
 
     public String getUsername() {
@@ -110,5 +127,13 @@ public class User {
 
     public String getBiography() {
         return biography;
+    }
+
+    public List<Experience> getExperiences() {
+        return experiences;
+    }
+
+    public List<Interest> getInterests() {
+        return interests;
     }
 }
