@@ -1,5 +1,7 @@
 package com.profile.model;
 
+import com.profile.dto.NewInterestDTO;
+
 import javax.persistence.*;
 
 @Entity
@@ -10,9 +12,13 @@ public class Interest {
     private Long id;
 
     @Column
-    private String name;
+    private String description;
 
     public Interest() {
+    }
+
+    public Interest(NewInterestDTO dto) {
+        this.description = dto.getDescription();
     }
 
     public Long getId() {
@@ -23,11 +29,11 @@ public class Interest {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getDescription() {
+        return description;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setDescription(String name) {
+        this.description = name;
     }
 }
