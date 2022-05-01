@@ -12,11 +12,7 @@ import java.util.List;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(unique = true)
-    private String uuid;
+    private String id;
 
     @Column(name = "first_name")
     private String firstName;
@@ -52,7 +48,7 @@ public class User {
     private List<Interest> interests;
 
     public User(String uuid, String firstName, String lastName, String email, String phoneNumber, Gender gender, Date dateOfBirth, String username, String biography) {
-        this.uuid = uuid;
+        this.id = uuid;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -66,7 +62,7 @@ public class User {
     }
 
     public User(NewUserDTO dto) {
-        this.uuid = dto.getUuid();
+        this.id = dto.getUuid();
         this.firstName = dto.getFirstName();
         this.lastName = dto.getLastName();
         this.email = dto.getEmail();
@@ -80,16 +76,12 @@ public class User {
 
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
-    }
-
-    public String getUuid() {
-        return uuid;
     }
 
     public String getFirstName() {

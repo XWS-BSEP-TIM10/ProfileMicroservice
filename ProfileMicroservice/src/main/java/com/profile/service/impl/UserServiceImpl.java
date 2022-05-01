@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean removeInterest(String id, Interest interest) {
-        Optional<User> user = userRepository.findByUuid(id);
+        Optional<User> user = userRepository.findById(id);
         if(user.isEmpty()) return false;
         user.get().getInterests().remove(interest);
         userRepository.save(user.get());
@@ -46,13 +46,13 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void deleteByUuid(String uuid) {
-        userRepository.deleteByUuid(uuid);
+    public void deleteById(String uuid) {
+        userRepository.deleteById(uuid);
     }
 
     @Override
     public User update(User user) {
-        Optional<User> existingUser = userRepository.findByUuid(user.getUuid());
+        Optional<User> existingUser = userRepository.findById(user.getId());
         if (existingUser.isEmpty()) return null;
         user.setId(existingUser.get().getId());
         user.setExperiences(existingUser.get().getExperiences());
@@ -75,8 +75,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> findByUuid(String id) {
-        return userRepository.findByUuid(id);
+    public Optional<User> findById(String id) {
+        return userRepository.findById(id);
     }
 
     @Override

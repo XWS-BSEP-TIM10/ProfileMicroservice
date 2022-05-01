@@ -8,13 +8,13 @@ import java.util.Optional;
 
 public interface UserService {
 
-    void deleteByUuid(String id);
+    void deleteById(String id);
 
     User update(User newUser);
 
     void addInterest(User user, Interest newInterest);
 
-    Optional<User> findByUuid(String id);
+    Optional<User> findById(String id);
 
     void addExperience(Experience experience, User user);
 

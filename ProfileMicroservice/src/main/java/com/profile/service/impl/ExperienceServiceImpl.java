@@ -35,7 +35,7 @@ public class ExperienceServiceImpl implements ExperienceService {
 
     @Override
     public Experience add(String userId, Experience newExperience) {
-        Optional<User> existingUser = userService.findByUuid(userId);
+        Optional<User> existingUser = userService.findById(userId);
         if (existingUser.isEmpty()) return null;
         Experience savedExperience = save(newExperience);
         userService.addExperience(savedExperience, existingUser.get());

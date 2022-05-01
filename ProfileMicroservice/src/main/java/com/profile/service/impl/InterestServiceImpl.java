@@ -27,7 +27,7 @@ public class InterestServiceImpl implements InterestService {
 
     @Override
     public Interest add(String userId, Interest newInterest) {
-        Optional<User> existingUser = userService.findByUuid(userId);
+        Optional<User> existingUser = userService.findById(userId);
         if (existingUser.isEmpty()) return null;
         Interest savedInterest = save(newInterest);
         userService.addInterest(existingUser.get(), savedInterest);

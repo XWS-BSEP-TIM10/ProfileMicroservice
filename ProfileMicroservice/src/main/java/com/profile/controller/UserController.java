@@ -31,7 +31,7 @@ public class UserController {
             User createdUser = service.create(newUser);
             if (createdUser == null)
                 return ResponseEntity.ok(new ProfileResponseDTO(false, "failed"));
-            return ResponseEntity.ok(new ProfileResponseDTO(createdUser.getUuid(), true, "sucess"));
+            return ResponseEntity.ok(new ProfileResponseDTO(createdUser.getId(), true, "sucess"));
         } catch (ParseException e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().build();
@@ -46,7 +46,7 @@ public class UserController {
             User updatedUser = service.update(user);
             if (updatedUser == null)
                 return ResponseEntity.ok(new ProfileResponseDTO(false, "failed"));
-            return ResponseEntity.ok(new ProfileResponseDTO(updatedUser.getUuid(), true, "sucess"));
+            return ResponseEntity.ok(new ProfileResponseDTO(updatedUser.getId(), true, "sucess"));
         } catch (ParseException e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().build();
@@ -55,7 +55,7 @@ public class UserController {
 
     @DeleteMapping("{id}")
     public ResponseEntity<HttpStatus> delete(@PathVariable String id) {
-        service.deleteByUuid(id);
+        service.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 }
