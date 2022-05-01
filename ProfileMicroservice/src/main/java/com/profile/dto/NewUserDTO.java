@@ -1,6 +1,6 @@
 package com.profile.dto;
 
-public class NewUserDto {
+public class NewUserDTO {
 
     private String uuid;
 
@@ -22,10 +22,10 @@ public class NewUserDto {
 
     private String biography;
 
-    public NewUserDto() {
+    public NewUserDTO() {
     }
 
-    public NewUserDto(String uuid, String firstName, String lastName, String email, String phoneNumber, String gender, String dateOfBirth, String username, String password, String biography) {
+    public NewUserDTO(String uuid, String firstName, String lastName, String email, String phoneNumber, String gender, String dateOfBirth, String username, String password, String biography) {
         this.uuid = uuid;
         this.firstName = firstName;
         this.lastName = lastName;

@@ -1,7 +1,10 @@
 package com.profile.model;
 
+import com.profile.dto.NewExperienceDTO;
+
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Locale;
 
 @Entity
 public class Experience {
@@ -35,6 +38,13 @@ public class Experience {
     public Experience() {
     }
 
+    public Experience(NewExperienceDTO dto) {
+        this.institution = dto.getInstitution();
+        this.position = dto.getPosition();
+        this.description = dto.getDescription();
+        this.type = dto.getType().equalsIgnoreCase("WORK") ? ExperienceType.WORK : ExperienceType.EDUCATION;
+    }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -55,12 +65,24 @@ public class Experience {
         return fromDate;
     }
 
+    public void setFromDate(Date fromDate) {
+        this.fromDate = fromDate;
+    }
+
     public Date getToDate() {
         return toDate;
     }
 
+    public void setToDate(Date toDate) {
+        this.toDate = toDate;
+    }
+
     public String getDescription() {
         return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public ExperienceType getType() {

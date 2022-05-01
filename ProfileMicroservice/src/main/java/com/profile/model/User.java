@@ -1,9 +1,8 @@
 package com.profile.model;
 
-import com.profile.dto.NewUserDto;
+import com.profile.dto.NewUserDTO;
 
 import javax.persistence.*;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -48,7 +47,7 @@ public class User {
     @JoinColumn(name = "user_id")
     private List<Experience> experiences;
 
-    @OneToMany
+    @ManyToMany
     @JoinColumn(name = "user_id")
     private List<Interest> interests;
 
@@ -66,7 +65,7 @@ public class User {
         this.interests = new ArrayList<>();
     }
 
-    public User(NewUserDto dto) {
+    public User(NewUserDTO dto) {
         this.uuid = dto.getUuid();
         this.firstName = dto.getFirstName();
         this.lastName = dto.getLastName();
@@ -133,7 +132,15 @@ public class User {
         return experiences;
     }
 
+    public void setExperiences(List<Experience> experiences) {
+        this.experiences = experiences;
+    }
+
     public List<Interest> getInterests() {
         return interests;
+    }
+
+    public void setInterests(List<Interest> interests) {
+        this.interests = interests;
     }
 }
