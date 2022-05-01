@@ -4,7 +4,9 @@ import com.profile.model.Interest;
 
 public interface InterestService {
 
-    void save(Interest newInterest);
+    Interest save(Interest newInterest);
 
-    Interest update(Long id, Interest newInterest);
+    Interest add(String userId, Interest newInterest);
+
+    boolean removeInterest(Long id, String userId);
 }

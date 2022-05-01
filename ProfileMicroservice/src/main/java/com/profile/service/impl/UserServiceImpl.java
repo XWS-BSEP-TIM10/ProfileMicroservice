@@ -4,12 +4,12 @@ import com.profile.model.Experience;
 import com.profile.model.Interest;
 import com.profile.model.User;
 import com.profile.repository.UserRepository;
-import com.profile.service.ExperienceService;
-import com.profile.service.InterestService;
 import com.profile.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -17,17 +17,31 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private ExperienceService experienceService;
-
-    @Autowired
-    private InterestService interestService;
-
     @Override
-    public User save(User user) {
+    public User create(User user) {
         User existingUser = userRepository.findByUsername(user.getUsername());
         if (existingUser != null) return null;
         return userRepository.save(user);
+    }
+
+    @Override
+    public void removeExperience(Experience experience) {
+        for(User user : userRepository.findAll()){
+            if(user.getExperiences().contains(experience)){
+                user.getExperiences().remove(experience);
+                userRepository.save(user);
+                return;
+            }
+        }
+    }
+
+    @Override
+    public boolean removeInterest(String id, Interest interest) {
+        Optional<User> user = userRepository.findByUuid(id);
+        if(user.isEmpty()) return false;
+        user.get().getInterests().remove(interest);
+        userRepository.save(user.get());
+        return true;
     }
 
     @Transactional
@@ -38,30 +52,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User update(User user) {
-        User existingUser = userRepository.findByUuid(user.getUuid());
-        if (existingUser == null) return null;
-        user.setId(existingUser.getId());
-        user.setExperiences(existingUser.getExperiences());
-        user.setInterests(existingUser.getInterests());
+        Optional<User> existingUser = userRepository.findByUuid(user.getUuid());
+        if (existingUser.isEmpty()) return null;
+        user.setId(existingUser.get().getId());
+        user.setExperiences(existingUser.get().getExperiences());
+        user.setInterests(existingUser.get().getInterests());
         return userRepository.save(user);
     }
 
     @Override
-    public User addExperience(String id, Experience newExperience) {
-        User existingUser = userRepository.findByUuid(id);
-        if (existingUser == null) return null;
-        experienceService.save(newExperience);
-        existingUser.getExperiences().add(newExperience);
-        return userRepository.save(existingUser);
-    }
-
-    @Override
-    public User addInterest(String id, Interest newInterest) {
-        User existingUser = userRepository.findByUuid(id);
-        if (existingUser == null) return null;
-        interestService.save(newInterest);
-        if(!contains(existingUser, newInterest)) existingUser.getInterests().add(newInterest);
-        return userRepository.save(existingUser);
+    public void addInterest(User user, Interest newInterest) {
+        if(!contains(user, newInterest)) user.getInterests().add(newInterest);
+        userRepository.save(user);
     }
 
     private boolean contains(User user, Interest newInterest) {
@@ -70,5 +72,16 @@ public class UserServiceImpl implements UserService {
                 return true;
         }
         return false;
+    }
+
+    @Override
+    public Optional<User> findByUuid(String id) {
+        return userRepository.findByUuid(id);
+    }
+
+    @Override
+    public void addExperience(Experience experience, User user) {
+        user.getExperiences().add(experience);
+        userRepository.save(user);
     }
 }

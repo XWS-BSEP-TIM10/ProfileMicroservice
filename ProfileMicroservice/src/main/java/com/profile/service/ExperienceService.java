@@ -7,4 +7,8 @@ public interface ExperienceService {
     Experience save(Experience experience);
 
     Experience update(Long id, Experience newExperience);
+
+    Experience add(String userId, Experience experience);
+
+    boolean remove(Long id);
 }

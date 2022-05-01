@@ -2,6 +2,8 @@ package com.profile.dto;
 
 public class NewExperienceDTO {
 
+    private String userId;
+
     private String institution;
 
     private String position;
@@ -15,6 +17,14 @@ public class NewExperienceDTO {
     private String type;
 
     public NewExperienceDTO() {
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getInstitution() {
