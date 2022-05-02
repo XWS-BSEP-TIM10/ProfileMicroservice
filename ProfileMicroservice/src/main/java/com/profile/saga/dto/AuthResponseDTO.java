@@ -1,27 +1,16 @@
-package com.profile.dto;
+package com.profile.saga.dto;
 
-public class ProfileResponseDTO {
+public class AuthResponseDTO {
 
-    private String id;
     private boolean success;
     private String message;
 
-    public ProfileResponseDTO() {
+    public AuthResponseDTO() {
     }
 
-    public ProfileResponseDTO(String id, boolean success, String message) {
-        this.id = id;
+    public AuthResponseDTO(boolean success, String message) {
         this.success = success;
         this.message = message;
-    }
-
-    public ProfileResponseDTO(boolean success, String message) {
-        this.success = success;
-        this.message = message;
-    }
-
-    public String getId() {
-        return id;
     }
 
     public boolean isSuccess() {

@@ -1,8 +1,11 @@
 package com.profile.controller;
 
 import com.profile.dto.NewUserDTO;
-import com.profile.dto.ProfileResponseDTO;
+import com.profile.dto.AuthSagaResponseDTO;
+import com.profile.dto.UpdateResponseDTO;
 import com.profile.model.User;
+import com.profile.saga.dto.OrchestratorResponseDTO;
+import com.profile.saga.dto.UpdateUserDTO;
 import com.profile.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,14 +27,14 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<ProfileResponseDTO> create(@RequestBody NewUserDTO dto) {
+    public ResponseEntity<AuthSagaResponseDTO> create(@RequestBody NewUserDTO dto) {
         try {
             User newUser = new User(dto);
             newUser.setDateOfBirth(new SimpleDateFormat("dd/MM/yyyy").parse(dto.getDateOfBirth()));
             User createdUser = service.create(newUser);
             if (createdUser == null)
-                return ResponseEntity.ok(new ProfileResponseDTO(false, "failed"));
-            return ResponseEntity.ok(new ProfileResponseDTO(createdUser.getId(), true, "sucess"));
+                return ResponseEntity.ok(new AuthSagaResponseDTO(false, "failed"));
+            return ResponseEntity.ok(new AuthSagaResponseDTO(createdUser.getId(), true, "sucess"));
         } catch (ParseException e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().build();
@@ -39,14 +42,12 @@ public class UserController {
     }
 
     @PutMapping
-    public ResponseEntity<ProfileResponseDTO> update(@RequestBody NewUserDTO dto) {
+    public ResponseEntity<UpdateResponseDTO> update(@RequestBody NewUserDTO dto) {
         try {
             User user = new User(dto);
             user.setDateOfBirth(new SimpleDateFormat("dd/MM/yyyy").parse(dto.getDateOfBirth()));
-            User updatedUser = service.update(user);
-            if (updatedUser == null)
-                return ResponseEntity.ok(new ProfileResponseDTO(false, "failed"));
-            return ResponseEntity.ok(new ProfileResponseDTO(updatedUser.getId(), true, "sucess"));
+            OrchestratorResponseDTO response = service.updateUser(user).block();
+            return ResponseEntity.ok(new UpdateResponseDTO(response.isSuccess(), response.getMessage()));
         } catch (ParseException e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().build();

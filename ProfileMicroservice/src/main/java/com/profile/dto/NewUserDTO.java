@@ -1,5 +1,9 @@
 package com.profile.dto;
 
+import com.profile.model.User;
+
+import java.text.SimpleDateFormat;
+
 public class NewUserDTO {
 
     private String uuid;
@@ -36,6 +40,17 @@ public class NewUserDTO {
         this.username = username;
         this.password = password;
         this.biography = biography;
+    }
+
+    public NewUserDTO(User user) {
+        this.uuid = user.getId();
+        this.firstName = user.getFirstName();
+        this.lastName = user.getLastName();
+        this.email = user.getEmail();
+        this.phoneNumber = user.getPhoneNumber();
+        this.gender = user.getGender().toString();
+        this.username = user.getUsername();
+        this.biography = user.getBiography();
     }
 
     public String getUuid() {
