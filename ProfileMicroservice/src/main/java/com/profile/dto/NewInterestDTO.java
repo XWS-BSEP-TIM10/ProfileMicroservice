@@ -8,8 +8,18 @@ public class NewInterestDTO {
 
     public NewInterestDTO() {
     }
+    
+    
 
-    public String getUserId() {
+    public NewInterestDTO(String userId, String description) {
+		super();
+		this.userId = userId;
+		this.description = description;
+	}
+
+
+
+	public String getUserId() {
         return userId;
     }
 

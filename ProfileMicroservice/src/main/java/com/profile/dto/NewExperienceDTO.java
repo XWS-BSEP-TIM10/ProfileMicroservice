@@ -19,7 +19,23 @@ public class NewExperienceDTO {
     public NewExperienceDTO() {
     }
 
-    public String getUserId() {
+    
+    
+    public NewExperienceDTO(String userId, String institution, String position, String fromDate, String toDate,
+			String description, String type) {
+		super();
+		this.userId = userId;
+		this.institution = institution;
+		this.position = position;
+		this.fromDate = fromDate;
+		this.toDate = toDate;
+		this.description = description;
+		this.type = type;
+	}
+
+
+
+	public String getUserId() {
         return userId;
     }
 
