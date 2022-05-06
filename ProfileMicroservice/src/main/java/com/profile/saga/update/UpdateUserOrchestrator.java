@@ -15,6 +15,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -66,7 +68,12 @@ public class UpdateUserOrchestrator {
             AuthUpdateWorkflowStep authWorkflowStep = new AuthUpdateWorkflowStep(authClient, newUserDTO, oldUserDTO);
             workflowSteps.add(authWorkflowStep);
         }
-
+        try {
+			newUser.setDateOfBirth(new SimpleDateFormat("dd/MM/yyyy").parse(userDTO.getDateOfBirth()));
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
         ProfileUpdateWorkflowStep profileWorkflowStep = new ProfileUpdateWorkflowStep(newUser, oldUser.get(), userService);
         workflowSteps.add(profileWorkflowStep);
 

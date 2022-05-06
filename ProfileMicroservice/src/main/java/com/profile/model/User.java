@@ -5,7 +5,9 @@ import com.profile.dto.NewUserDTO;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name="users")
@@ -39,13 +41,12 @@ public class User {
     @Column(name = "biography")
     private String biography;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
-    private List<Experience> experiences;
+    private Set<Experience> experiences;
 
-    @ManyToMany
-    @JoinColumn(name = "user_id")
-    private List<Interest> interests;
+    @ManyToMany(fetch = FetchType.EAGER, cascade=CascadeType.PERSIST)
+    private Set<Interest> interests;
 
     public User(String uuid, String firstName, String lastName, String email, String phoneNumber, Gender gender, Date dateOfBirth, String username, String biography) {
         this.id = uuid;
@@ -57,8 +58,8 @@ public class User {
         this.dateOfBirth = dateOfBirth;
         this.username = username;
         this.biography = biography;
-        this.experiences = new ArrayList<>();
-        this.interests = new ArrayList<>();
+        this.experiences = new HashSet<>();
+        this.interests = new HashSet<>();
     }
 
     public User(NewUserDTO dto) {
@@ -120,19 +121,21 @@ public class User {
         return biography;
     }
 
-    public List<Experience> getExperiences() {
-        return experiences;
-    }
+	public Set<Experience> getExperiences() {
+		return experiences;
+	}
 
-    public void setExperiences(List<Experience> experiences) {
-        this.experiences = experiences;
-    }
+	public void setExperiences(Set<Experience> experiences) {
+		this.experiences = experiences;
+	}
 
-    public List<Interest> getInterests() {
-        return interests;
-    }
+	public Set<Interest> getInterests() {
+		return interests;
+	}
 
-    public void setInterests(List<Interest> interests) {
-        this.interests = interests;
-    }
+	public void setInterests(Set<Interest> interests) {
+		this.interests = interests;
+	}
+
+   
 }

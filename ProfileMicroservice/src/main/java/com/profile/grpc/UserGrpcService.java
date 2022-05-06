@@ -2,6 +2,7 @@ package com.profile.grpc;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -33,6 +34,8 @@ public class UserGrpcService extends UserGrpcServiceGrpc.UserGrpcServiceImplBase
 			try {
 				NewUserDTO dto = new NewUserDTO(request.getUuid(),request.getFirstName(),request.getLastName(),request.getEmail(),request.getPhoneNumber(),request.getGender(),request.getDateOfBirth(),request.getUsername(),request.getPassword(),request.getBiography());
 	            User user = new User(dto);
+	            Date date1 = new SimpleDateFormat("dd/MM/yyyy").parse(dto.getDateOfBirth());
+	            System.out.println(date1);
 	            user.setDateOfBirth(new SimpleDateFormat("dd/MM/yyyy").parse(dto.getDateOfBirth()));
 	            OrchestratorResponseDTO response = service.updateUser(user).block();
 	            responseProto= UpdateUserResponseProto.newBuilder().setStatus("Status 200").setSuccess(response.isSuccess()).setMessage(response.getMessage()).build();
