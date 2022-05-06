@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/v1/profiles")
@@ -58,5 +59,12 @@ public class UserController {
     public ResponseEntity<HttpStatus> delete(@PathVariable String id) {
         service.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+    
+    @GetMapping("{first_name}/{last_name}")
+    public ResponseEntity<List<User>> find(@PathVariable String first_name, @PathVariable String last_name) {
+    	List<User> users = service.findByFirstNameAndLastName(first_name, last_name);
+    	return ResponseEntity.ok(users);
+    	
     }
 }

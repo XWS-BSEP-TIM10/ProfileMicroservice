@@ -17,6 +17,7 @@ import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -110,5 +111,9 @@ public class UserServiceImpl implements UserService {
     public void addExperience(Experience experience, User user) {
         user.getExperiences().add(experience);
         userRepository.save(user);
+    }
+    
+    public List<User> findByFirstNameAndLastName(String firstName, String lastName){
+    	return userRepository.findAllByFirstNameAndLastName(firstName, lastName);
     }
 }

@@ -6,6 +6,7 @@ import com.profile.model.User;
 import com.profile.saga.dto.OrchestratorResponseDTO;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
@@ -27,4 +28,6 @@ public interface UserService {
     boolean removeInterest(String id, Interest interest);
 
     Mono<OrchestratorResponseDTO> updateUser(User user);
+    
+    List<User> findByFirstNameAndLastName(String firstName, String lastName);
 }
