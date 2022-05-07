@@ -1,6 +1,12 @@
 package com.profile.dto;
 
-public class NewUserDto {
+import com.profile.model.User;
+
+import java.text.SimpleDateFormat;
+
+public class NewUserDTO {
+
+    private String uuid;
 
     private String firstName;
 
@@ -20,10 +26,11 @@ public class NewUserDto {
 
     private String biography;
 
-    public NewUserDto() {
+    public NewUserDTO() {
     }
 
-    public NewUserDto(String firstName, String lastName, String email, String phoneNumber, String gender, String dateOfBirth, String username, String password, String biography) {
+    public NewUserDTO(String uuid, String firstName, String lastName, String email, String phoneNumber, String gender, String dateOfBirth, String username, String password, String biography) {
+        this.uuid = uuid;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -33,6 +40,25 @@ public class NewUserDto {
         this.username = username;
         this.password = password;
         this.biography = biography;
+    }
+
+    public NewUserDTO(User user) {
+        this.uuid = user.getId();
+        this.firstName = user.getFirstName();
+        this.lastName = user.getLastName();
+        this.email = user.getEmail();
+        this.phoneNumber = user.getPhoneNumber();
+        this.gender = user.getGender().toString();
+        this.username = user.getUsername();
+        this.biography = user.getBiography();
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public String getFirstName() {

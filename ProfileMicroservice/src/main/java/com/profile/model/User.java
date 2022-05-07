@@ -1,16 +1,20 @@
 package com.profile.model;
 
-import com.profile.dto.NewUserDto;
+import com.profile.dto.NewUserDTO;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name="users")
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     @Column(name = "first_name")
     private String firstName;
@@ -25,10 +29,11 @@ public class User {
     private String phoneNumber;
 
     @Column(name = "gender")
-    private String gender;
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
 
     @Column(name = "date_of_birth")
-    private String dateOfBirth;
+    private Date dateOfBirth;
 
     @Column(name = "username", unique = true, nullable = false)
     private String username;
@@ -36,7 +41,15 @@ public class User {
     @Column(name = "biography")
     private String biography;
 
-    public User(String firstName, String lastName, String email, String phoneNumber, String gender, String dateOfBirth, String username, String biography) {
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    private Set<Experience> experiences;
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade=CascadeType.PERSIST)
+    private Set<Interest> interests;
+
+    public User(String uuid, String firstName, String lastName, String email, String phoneNumber, Gender gender, Date dateOfBirth, String username, String biography) {
+        this.id = uuid;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -45,15 +58,17 @@ public class User {
         this.dateOfBirth = dateOfBirth;
         this.username = username;
         this.biography = biography;
+        this.experiences = new HashSet<>();
+        this.interests = new HashSet<>();
     }
 
-    public User(NewUserDto dto) {
+    public User(NewUserDTO dto) {
+        this.id = dto.getUuid();
         this.firstName = dto.getFirstName();
         this.lastName = dto.getLastName();
         this.email = dto.getEmail();
         this.phoneNumber = dto.getPhoneNumber();
-        this.gender = dto.getGender();
-        this.dateOfBirth = dto.getDateOfBirth();
+        this.gender = dto.getGender().equalsIgnoreCase("FEMALE") ? Gender.FEMALE : Gender.MALE;
         this.username = dto.getUsername();
         this.biography = dto.getBiography();
     }
@@ -62,8 +77,12 @@ public class User {
 
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getFirstName() {
@@ -82,12 +101,16 @@ public class User {
         return phoneNumber;
     }
 
-    public String getGender() {
+    public Gender getGender() {
         return gender;
     }
 
-    public String getDateOfBirth() {
+    public Date getDateOfBirth() {
         return dateOfBirth;
+    }
+
+    public void setDateOfBirth(Date dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
     }
 
     public String getUsername() {
@@ -97,4 +120,22 @@ public class User {
     public String getBiography() {
         return biography;
     }
+
+	public Set<Experience> getExperiences() {
+		return experiences;
+	}
+
+	public void setExperiences(Set<Experience> experiences) {
+		this.experiences = experiences;
+	}
+
+	public Set<Interest> getInterests() {
+		return interests;
+	}
+
+	public void setInterests(Set<Interest> interests) {
+		this.interests = interests;
+	}
+
+   
 }
