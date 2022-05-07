@@ -56,14 +56,15 @@ public class ExperienceGrpcService extends ExperienceGrpcServiceGrpc.ExperienceG
 			UpdateExperienceResponseProto responseProto;
 			
 			try {
-				 NewExperienceDTO dto = new NewExperienceDTO(request.getUserId(),request.getInstitution(),request.getPosition(),request.getFromDate(),request.getToDate(),request.getDescription(),request.getType());
+				NewExperienceDTO dto = new NewExperienceDTO(request.getUserId(),request.getInstitution(),request.getPosition(),request.getFromDate(),request.getToDate(),request.getDescription(),request.getType());
 	            Experience newExperience = new Experience(dto);
 	            newExperience.setFromDate(new SimpleDateFormat("dd/MM/yyyy").parse(dto.getFromDate()));
 	            newExperience.setToDate(new SimpleDateFormat("dd/MM/yyyy").parse(dto.getToDate()));
 	            Experience updatedExperience = service.update(request.getId(), newExperience);
 	            if (updatedExperience == null)
 	            	responseProto= UpdateExperienceResponseProto.newBuilder().setStatus("Status 404").build();
-	            responseProto = UpdateExperienceResponseProto.newBuilder().setStatus("Status 200").setId(updatedExperience.getId()).setPosition(updatedExperience.getPosition()).setFromDate(dto.getFromDate()).setToDate(dto.getToDate()).setDescription(updatedExperience.getDescription()).setType(dto.getType()).build();
+				else
+	            	responseProto = UpdateExperienceResponseProto.newBuilder().setStatus("Status 200").setId(updatedExperience.getId()).setPosition(updatedExperience.getPosition()).setFromDate(dto.getFromDate()).setToDate(dto.getToDate()).setDescription(updatedExperience.getDescription()).setType(dto.getType()).build();
 	        } catch (ParseException e) {
 	            e.printStackTrace();
 	            responseProto= UpdateExperienceResponseProto.newBuilder().setStatus("Status 400").build();
