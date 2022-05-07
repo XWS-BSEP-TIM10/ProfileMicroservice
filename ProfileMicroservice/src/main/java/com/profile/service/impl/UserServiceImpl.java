@@ -1,6 +1,8 @@
 package com.profile.service.impl;
 
 import com.profile.dto.NewUserDTO;
+import com.profile.exception.UserNotFoundException;
+import com.profile.exception.UsernameAlreadyExists;
 import com.profile.model.Experience;
 import com.profile.model.Interest;
 import com.profile.model.User;
@@ -60,12 +62,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Mono<OrchestratorResponseDTO> updateUser(User user) {
+    public Mono<OrchestratorResponseDTO> updateUser(User user) throws UserNotFoundException, UsernameAlreadyExists {
+        if(!userExists(user.getId()))
+            throw new UserNotFoundException();
+        if(usernameExists(user.getUsername(), user.getId()))
+            throw new UsernameAlreadyExists();
         NewUserDTO userDTO = new NewUserDTO(user);
         SimpleDateFormat iso8601Formatter = new SimpleDateFormat("dd/MM/yyyy");
         userDTO.setDateOfBirth(iso8601Formatter.format(user.getDateOfBirth()));
         UpdateUserOrchestrator orchestrator = new UpdateUserOrchestrator(this, getAuthWebClient());
         return orchestrator.updateUser(userDTO);
+    }
+
+    private boolean usernameExists(String username, String id) {
+        User user = userRepository.findByUsername(username);
+        return user != null && !user.getId().equals(id);
+    }
+
+    private boolean userExists(String id) {
+        return findById(id).isPresent();
     }
 
     private WebClient getAuthWebClient() {
