@@ -15,6 +15,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.net.UnknownServiceException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -60,7 +61,6 @@ public class UpdateUserOrchestrator {
         User newUser = new User(userDTO);
         UpdateUserDTO newUserDTO = new UpdateUserDTO(userDTO.getUuid(), userDTO.getUsername());
 
-        //TODO: dodati exception
         Optional<User> oldUser = userService.findById(userDTO.getUuid());
         UpdateUserDTO oldUserDTO = new UpdateUserDTO(oldUser.get().getId(), oldUser.get().getUsername());
 

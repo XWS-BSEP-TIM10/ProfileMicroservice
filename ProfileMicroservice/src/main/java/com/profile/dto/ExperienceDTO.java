@@ -5,6 +5,8 @@ import com.profile.model.Experience;
 public class ExperienceDTO {
 
     private Long id;
+    
+    private String institution;
 
     private String position;
 
@@ -26,9 +28,12 @@ public class ExperienceDTO {
         this.toDate = experience.getToDate().toString();
         this.description = experience.getDescription();
         this.type = experience.getType().toString();
+        this.institution = experience.getInstitution();
     }
 
-    public Long getId() {
+
+
+	public Long getId() {
         return id;
     }
 
@@ -75,4 +80,18 @@ public class ExperienceDTO {
     public void setType(String type) {
         this.type = type;
     }
+
+
+
+	public String getInstitution() {
+		return institution;
+	}
+
+
+
+	public void setInstitution(String institution) {
+		this.institution = institution;
+	}
+    
+    
 }

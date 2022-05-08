@@ -3,6 +3,8 @@ package com.profile.controller;
 import com.profile.dto.NewUserDTO;
 import com.profile.dto.AuthSagaResponseDTO;
 import com.profile.dto.UpdateResponseDTO;
+import com.profile.exception.UserNotFoundException;
+import com.profile.exception.UsernameAlreadyExists;
 import com.profile.model.User;
 import com.profile.saga.dto.OrchestratorResponseDTO;
 import com.profile.saga.dto.UpdateUserDTO;
@@ -52,6 +54,12 @@ public class UserController {
         } catch (ParseException e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().build();
+        } catch (UserNotFoundException e) {
+            e.printStackTrace();
+            return ResponseEntity.notFound().build();
+        } catch (UsernameAlreadyExists e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
     }
 

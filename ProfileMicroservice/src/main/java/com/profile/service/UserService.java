@@ -1,5 +1,7 @@
 package com.profile.service;
 
+import com.profile.exception.UserNotFoundException;
+import com.profile.exception.UsernameAlreadyExists;
 import com.profile.model.Experience;
 import com.profile.model.Interest;
 import com.profile.model.User;
@@ -27,7 +29,7 @@ public interface UserService {
 
     boolean removeInterest(String id, Interest interest);
 
-    Mono<OrchestratorResponseDTO> updateUser(User user);
+    Mono<OrchestratorResponseDTO> updateUser(User user) throws UserNotFoundException, UsernameAlreadyExists;
     
     List<User> findByFirstNameAndLastName(String firstName, String lastName);
 }

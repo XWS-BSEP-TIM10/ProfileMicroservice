@@ -2,8 +2,6 @@ package com.profile.dto;
 
 import com.profile.model.User;
 
-import java.text.SimpleDateFormat;
-
 public class NewUserDTO {
 
     private String uuid;
