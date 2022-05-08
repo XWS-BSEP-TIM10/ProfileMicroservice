@@ -41,7 +41,7 @@ public class ExperienceGrpcService extends ExperienceGrpcServiceGrpc.ExperienceG
 	            Experience addedExperience = service.add(dto.getUserId(), newExperience);
 	            if(addedExperience == null)
 	            	responseProto= NewExperienceResponseProto.newBuilder().setStatus("Status 404").build();
-	            responseProto = NewExperienceResponseProto.newBuilder().setStatus("Status 200").setId(addedExperience.getId()).setPosition(addedExperience.getPosition()).setFromDate(dto.getFromDate()).setToDate(dto.getToDate()).setDescription(addedExperience.getDescription()).setType(dto.getType()).build();
+	            responseProto = NewExperienceResponseProto.newBuilder().setStatus("Status 200").setId(addedExperience.getId()).setPosition(addedExperience.getPosition()).setFromDate(dto.getFromDate()).setToDate(dto.getToDate()).setDescription(addedExperience.getDescription()).setType(dto.getType()).setInstitution(dto.getInstitution()).build();
 	        } catch (ParseException e) {
 	            e.printStackTrace();
 	            responseProto= NewExperienceResponseProto.newBuilder().setStatus("Status 400").build();
@@ -64,7 +64,7 @@ public class ExperienceGrpcService extends ExperienceGrpcServiceGrpc.ExperienceG
 	            if (updatedExperience == null)
 	            	responseProto= UpdateExperienceResponseProto.newBuilder().setStatus("Status 404").build();
 				else
-	            	responseProto = UpdateExperienceResponseProto.newBuilder().setStatus("Status 200").setId(updatedExperience.getId()).setPosition(updatedExperience.getPosition()).setFromDate(dto.getFromDate()).setToDate(dto.getToDate()).setDescription(updatedExperience.getDescription()).setType(dto.getType()).build();
+	            	responseProto = UpdateExperienceResponseProto.newBuilder().setStatus("Status 200").setId(updatedExperience.getId()).setPosition(updatedExperience.getPosition()).setFromDate(dto.getFromDate()).setToDate(dto.getToDate()).setDescription(updatedExperience.getDescription()).setType(dto.getType()).setInstitution(dto.getInstitution()).build();
 	        } catch (ParseException e) {
 	            e.printStackTrace();
 	            responseProto= UpdateExperienceResponseProto.newBuilder().setStatus("Status 400").build();
