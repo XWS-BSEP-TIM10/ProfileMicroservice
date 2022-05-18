@@ -33,7 +33,8 @@ private final InterestService service;
 	        Interest addedInterest = service.add(dto.getUserId(), newInterest);
 	        if(addedInterest == null)
 	        	responseProto= NewInterestResponseProto.newBuilder().setStatus("Status 404").build();
-	        responseProto= NewInterestResponseProto.newBuilder().setStatus("Status 200").setId(addedInterest.getId()).setDescription(addedInterest.getDescription()).build();
+	        else
+				responseProto= NewInterestResponseProto.newBuilder().setStatus("Status 200").setId(addedInterest.getId()).setDescription(addedInterest.getDescription()).build();
 		 	
 		 	responseObserver.onNext(responseProto);
 	        responseObserver.onCompleted();
@@ -44,8 +45,10 @@ private final InterestService service;
 			RemoveInterestResponseProto responseProto;
 			
 			 boolean success = service.removeInterest(request.getId(), request.getUserId());
-		        if(!success) responseProto= RemoveInterestResponseProto.newBuilder().setStatus("Status 404").build();
-		        responseProto= RemoveInterestResponseProto.newBuilder().setStatus("Status 200").build();
+			 if(!success)
+				 responseProto= RemoveInterestResponseProto.newBuilder().setStatus("Status 404").build();
+			 else
+				 responseProto= RemoveInterestResponseProto.newBuilder().setStatus("Status 200").build();
 		 	
 		 	responseObserver.onNext(responseProto);
 	        responseObserver.onCompleted();
