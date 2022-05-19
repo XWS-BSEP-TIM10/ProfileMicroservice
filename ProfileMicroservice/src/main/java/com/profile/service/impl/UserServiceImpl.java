@@ -123,6 +123,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public String findIdByEmail(String email) {
+        return userRepository.findByEmail(email).getId();
+    }
+
+    @Override
     public void addExperience(Experience experience, User user) {
         user.getExperiences().add(experience);
         userRepository.save(user);
