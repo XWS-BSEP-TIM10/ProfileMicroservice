@@ -41,7 +41,8 @@ public class ExperienceGrpcService extends ExperienceGrpcServiceGrpc.ExperienceG
 	            Experience addedExperience = service.add(dto.getUserId(), newExperience);
 	            if(addedExperience == null)
 	            	responseProto= NewExperienceResponseProto.newBuilder().setStatus("Status 404").build();
-	            responseProto = NewExperienceResponseProto.newBuilder().setStatus("Status 200").setId(addedExperience.getId()).setPosition(addedExperience.getPosition()).setFromDate(dto.getFromDate()).setToDate(dto.getToDate()).setDescription(addedExperience.getDescription()).setType(dto.getType()).setInstitution(dto.getInstitution()).build();
+	            else
+					responseProto = NewExperienceResponseProto.newBuilder().setStatus("Status 200").setId(addedExperience.getId()).setPosition(addedExperience.getPosition()).setFromDate(dto.getFromDate()).setToDate(dto.getToDate()).setDescription(addedExperience.getDescription()).setType(dto.getType()).setInstitution(dto.getInstitution()).build();
 	        } catch (ParseException e) {
 	            e.printStackTrace();
 	            responseProto= NewExperienceResponseProto.newBuilder().setStatus("Status 400").build();
@@ -79,8 +80,10 @@ public class ExperienceGrpcService extends ExperienceGrpcServiceGrpc.ExperienceG
 			RemoveExperienceResponseProto responseProto;
 			
 			boolean success = service.remove(request.getId());
-	        if(!success) responseProto= RemoveExperienceResponseProto.newBuilder().setStatus("Status 404").build();
-	        responseProto= RemoveExperienceResponseProto.newBuilder().setStatus("Status 200").build();
+	        if(!success)
+				responseProto= RemoveExperienceResponseProto.newBuilder().setStatus("Status 404").build();
+	        else
+				responseProto= RemoveExperienceResponseProto.newBuilder().setStatus("Status 200").build();
 		 	
 		 	responseObserver.onNext(responseProto);
 	        responseObserver.onCompleted();

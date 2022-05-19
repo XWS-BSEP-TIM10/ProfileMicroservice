@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import com.profile.exception.UserNotFoundException;
 import com.profile.exception.UsernameAlreadyExists;
@@ -19,14 +20,7 @@ import com.profile.service.UserService;
 
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
-import proto.ExperienceProto;
-import proto.FindUserProto;
-import proto.FindUserResponseProto;
-import proto.InterestProto;
-import proto.UpdateUserProto;
-import proto.UpdateUserResponseProto;
-import proto.UserGrpcServiceGrpc;
-import proto.UserProto;
+import proto.*;
 
 @GrpcService
 public class UserGrpcService extends UserGrpcServiceGrpc.UserGrpcServiceImplBase{
@@ -41,28 +35,28 @@ public class UserGrpcService extends UserGrpcServiceGrpc.UserGrpcServiceImplBase
 	
 	@Override
 	public void update(UpdateUserProto request, StreamObserver<UpdateUserResponseProto> responseObserver) {
-			UpdateUserResponseProto responseProto;
+		UpdateUserResponseProto responseProto;
 			
-			try {
-				NewUserDTO dto = new NewUserDTO(request.getUuid(),request.getFirstName(),request.getLastName(),request.getEmail(),request.getPhoneNumber(),request.getGender(),request.getDateOfBirth(),request.getUsername(),request.getPassword(),request.getBiography());
-	            User user = new User(dto);
-	            user.setDateOfBirth(new SimpleDateFormat("dd/MM/yyyy").parse(dto.getDateOfBirth()));
-	            OrchestratorResponseDTO response = service.updateUser(user).block();
-	            responseProto= UpdateUserResponseProto.newBuilder().setStatus("Status 200").setSuccess(response.isSuccess()).setMessage(response.getMessage()).build();
-	        } catch (ParseException e) {
-	            e.printStackTrace();
-	            responseProto = UpdateUserResponseProto.newBuilder().setStatus("Status 400").build();
-	        } catch (UserNotFoundException e){
-				e.printStackTrace();
-				responseProto = UpdateUserResponseProto.newBuilder().setStatus("Status 404").build();
-			} catch (UsernameAlreadyExists e) {
-				e.printStackTrace();
-				responseProto = UpdateUserResponseProto.newBuilder().setStatus("Status 409").build();
-			}
+		try {
+			NewUserDTO dto = new NewUserDTO(request.getUuid(),request.getFirstName(),request.getLastName(),request.getEmail(),request.getPhoneNumber(),request.getGender(),request.getDateOfBirth(),request.getUsername(),request.getPassword(),request.getBiography());
+	        User user = new User(dto);
+	        user.setDateOfBirth(new SimpleDateFormat("dd/MM/yyyy").parse(dto.getDateOfBirth()));
+	        OrchestratorResponseDTO response = service.updateUser(user).block();
+	        responseProto= UpdateUserResponseProto.newBuilder().setStatus("Status 200").setSuccess(response.isSuccess()).setMessage(response.getMessage()).build();
+		} catch (ParseException e) {
+	    	e.printStackTrace();
+	        responseProto = UpdateUserResponseProto.newBuilder().setStatus("Status 400").build();
+		} catch (UserNotFoundException e){
+			e.printStackTrace();
+			responseProto = UpdateUserResponseProto.newBuilder().setStatus("Status 404").build();
+		} catch (UsernameAlreadyExists e) {
+			e.printStackTrace();
+			responseProto = UpdateUserResponseProto.newBuilder().setStatus("Status 409").build();
+		}
 
 
 		responseObserver.onNext(responseProto);
-	        responseObserver.onCompleted();
+		responseObserver.onCompleted();
 	}
 	
 	@Override
@@ -91,6 +85,21 @@ public class UserGrpcService extends UserGrpcServiceGrpc.UserGrpcServiceImplBase
 		
 		responseObserver.onNext(responseProto);
         responseObserver.onCompleted();
+	}
+
+	@Override
+	public void getFirstAndLastName(UserNamesProto request, StreamObserver<UserNamesResponseProto> responseObserver) {
+
+		Optional<User> user = service.findById(request.getId());
+		UserNamesResponseProto responseProto;
+		if(user.isEmpty())
+			responseProto = UserNamesResponseProto.newBuilder().setStatus("Status 404").build();
+		else
+			responseProto = UserNamesResponseProto.newBuilder().setStatus("Status 200")
+													.setFirstName(user.get().getFirstName()).setLastName(user.get().getLastName()).build();
+
+		responseObserver.onNext(responseProto);
+		responseObserver.onCompleted();
 	}
 
 }
