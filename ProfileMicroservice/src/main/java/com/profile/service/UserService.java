@@ -21,6 +21,8 @@ public interface UserService {
 
     Optional<User> findById(String id);
 
+    String findIdByEmail(String email);
+
     void addExperience(Experience experience, User user);
 
     User create(User newUser);

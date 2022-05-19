@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import com.profile.exception.UserNotFoundException;
 import com.profile.exception.UsernameAlreadyExists;
@@ -19,14 +20,7 @@ import com.profile.service.UserService;
 
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
-import proto.ExperienceProto;
-import proto.FindUserProto;
-import proto.FindUserResponseProto;
-import proto.InterestProto;
-import proto.UpdateUserProto;
-import proto.UpdateUserResponseProto;
-import proto.UserGrpcServiceGrpc;
-import proto.UserProto;
+import proto.*;
 
 @GrpcService
 public class UserGrpcService extends UserGrpcServiceGrpc.UserGrpcServiceImplBase{
@@ -91,6 +85,37 @@ public class UserGrpcService extends UserGrpcServiceGrpc.UserGrpcServiceImplBase
 		
 		responseObserver.onNext(responseProto);
         responseObserver.onCompleted();
+	}
+
+	@Override
+	public void getEmail(EmailProto request, StreamObserver<EmailResponseProto> responseObserver) {
+
+		User user = service.findById(request.getId()).get();
+		EmailResponseProto responseProto;
+		if(user != null) {
+			responseProto = EmailResponseProto.newBuilder().setEmail(user.getEmail()).setStatus("Status 200").build();
+		}else{
+			responseProto = EmailResponseProto.newBuilder().setEmail("").setStatus("Status 404").build();
+		}
+
+		responseObserver.onNext(responseProto);
+		responseObserver.onCompleted();
+	}
+
+	@Override
+	public void getId(IdProto request, StreamObserver<IdResponseProto> responseObserver) {
+
+		String id = service.findIdByEmail(request.getEmail());
+		IdResponseProto responseProto;
+
+		if(id != null) {
+			responseProto = IdResponseProto.newBuilder().setId(id).setStatus("Status 200").build();
+		}else{
+			responseProto = IdResponseProto.newBuilder().setId("").setStatus("Status 400").build();
+		}
+		responseObserver.onNext(responseProto);
+		responseObserver.onCompleted();
+
 	}
 
 }

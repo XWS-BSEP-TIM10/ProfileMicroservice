@@ -61,3 +61,19 @@ message InterestProto {
 	 int64 id = 1;
      string description = 2;
 }
+
+message EmailProto{
+  string id = 1;
+}
+message EmailResponseProto{
+  string email = 1;
+  string status = 2;
+}
+
+message IdProto{
+  string email = 1;
+}
+message IdResponseProto{
+  string id = 1;
+  string status = 2;
+}
