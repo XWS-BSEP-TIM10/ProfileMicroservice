@@ -37,22 +37,22 @@ public class UserGrpcService extends UserGrpcServiceGrpc.UserGrpcServiceImplBase
 	public void update(UpdateUserProto request, StreamObserver<UpdateUserResponseProto> responseObserver) {
 		UpdateUserResponseProto responseProto;
 			
-		try {
-			NewUserDTO dto = new NewUserDTO(request.getUuid(),request.getFirstName(),request.getLastName(),request.getEmail(),request.getPhoneNumber(),request.getGender(),request.getDateOfBirth(),request.getUsername(),request.getPassword(),request.getBiography());
-	        User user = new User(dto);
-	        user.setDateOfBirth(new SimpleDateFormat("dd/MM/yyyy").parse(dto.getDateOfBirth()));
-	        OrchestratorResponseDTO response = service.updateUser(user).block();
-	        responseProto= UpdateUserResponseProto.newBuilder().setStatus("Status 200").setSuccess(response.isSuccess()).setMessage(response.getMessage()).build();
-		} catch (ParseException e) {
-	    	e.printStackTrace();
-	        responseProto = UpdateUserResponseProto.newBuilder().setStatus("Status 400").build();
-		} catch (UserNotFoundException e){
-			e.printStackTrace();
-			responseProto = UpdateUserResponseProto.newBuilder().setStatus("Status 404").build();
-		} catch (UsernameAlreadyExists e) {
-			e.printStackTrace();
-			responseProto = UpdateUserResponseProto.newBuilder().setStatus("Status 409").build();
-		}
+			try {
+				NewUserDTO dto = new NewUserDTO(request.getUuid(),request.getFirstName(),request.getLastName(),request.getEmail(),request.getPhoneNumber(),request.getGender(),request.getDateOfBirth(),request.getUsername(),request.getBiography());
+	            User user = new User(dto);
+	            user.setDateOfBirth(new SimpleDateFormat("dd/MM/yyyy").parse(dto.getDateOfBirth()));
+	            OrchestratorResponseDTO response = service.updateUser(user).block();
+	            responseProto= UpdateUserResponseProto.newBuilder().setStatus("Status 200").setSuccess(response.isSuccess()).setMessage(response.getMessage()).build();
+	        } catch (ParseException e) {
+	            e.printStackTrace();
+	            responseProto = UpdateUserResponseProto.newBuilder().setStatus("Status 400").build();
+	        } catch (UserNotFoundException e){
+				e.printStackTrace();
+				responseProto = UpdateUserResponseProto.newBuilder().setStatus("Status 404").build();
+			} catch (UsernameAlreadyExists e) {
+				e.printStackTrace();
+				responseProto = UpdateUserResponseProto.newBuilder().setStatus("Status 409").build();
+			}
 
 
 		responseObserver.onNext(responseProto);
@@ -98,8 +98,36 @@ public class UserGrpcService extends UserGrpcServiceGrpc.UserGrpcServiceImplBase
 			responseProto = UserNamesResponseProto.newBuilder().setStatus("Status 200")
 													.setFirstName(user.get().getFirstName()).setLastName(user.get().getLastName()).build();
 
+	}
+	public void getEmail(EmailProto request, StreamObserver<EmailResponseProto> responseObserver) {
+
+		User user = service.findById(request.getId()).get();
+		EmailResponseProto responseProto;
+		if(user != null) {
+			responseProto = EmailResponseProto.newBuilder().setEmail(user.getEmail()).setStatus("Status 200").build();
+		}else{
+			responseProto = EmailResponseProto.newBuilder().setEmail("").setStatus("Status 404").build();
+		}
+
 		responseObserver.onNext(responseProto);
 		responseObserver.onCompleted();
 	}
+
+	@Override
+	public void getId(IdProto request, StreamObserver<IdResponseProto> responseObserver) {
+
+		String id = service.findIdByEmail(request.getEmail());
+		IdResponseProto responseProto;
+
+		if(id != null) {
+			responseProto = IdResponseProto.newBuilder().setId(id).setStatus("Status 200").build();
+		}else{
+			responseProto = IdResponseProto.newBuilder().setId("").setStatus("Status 400").build();
+		}
+		responseObserver.onNext(responseProto);
+		responseObserver.onCompleted();
+
+	}
+
 
 }

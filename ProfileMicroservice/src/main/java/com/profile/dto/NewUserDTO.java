@@ -20,14 +20,13 @@ public class NewUserDTO {
 
     private String username;
 
-    private String password;
 
     private String biography;
 
     public NewUserDTO() {
     }
 
-    public NewUserDTO(String uuid, String firstName, String lastName, String email, String phoneNumber, String gender, String dateOfBirth, String username, String password, String biography) {
+    public NewUserDTO(String uuid, String firstName, String lastName, String email, String phoneNumber, String gender, String dateOfBirth, String username, String biography) {
         this.uuid = uuid;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -36,7 +35,6 @@ public class NewUserDTO {
         this.gender = gender;
         this.dateOfBirth = dateOfBirth;
         this.username = username;
-        this.password = password;
         this.biography = biography;
     }
 
@@ -115,13 +113,6 @@ public class NewUserDTO {
         this.username = username;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
     public String getBiography() {
         return biography;
