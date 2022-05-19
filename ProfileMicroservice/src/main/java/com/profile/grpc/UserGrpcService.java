@@ -38,7 +38,7 @@ public class UserGrpcService extends UserGrpcServiceGrpc.UserGrpcServiceImplBase
 			UpdateUserResponseProto responseProto;
 			
 			try {
-				NewUserDTO dto = new NewUserDTO(request.getUuid(),request.getFirstName(),request.getLastName(),request.getEmail(),request.getPhoneNumber(),request.getGender(),request.getDateOfBirth(),request.getUsername(),request.getPassword(),request.getBiography());
+				NewUserDTO dto = new NewUserDTO(request.getUuid(),request.getFirstName(),request.getLastName(),request.getEmail(),request.getPhoneNumber(),request.getGender(),request.getDateOfBirth(),request.getUsername(),request.getBiography());
 	            User user = new User(dto);
 	            user.setDateOfBirth(new SimpleDateFormat("dd/MM/yyyy").parse(dto.getDateOfBirth()));
 	            OrchestratorResponseDTO response = service.updateUser(user).block();
