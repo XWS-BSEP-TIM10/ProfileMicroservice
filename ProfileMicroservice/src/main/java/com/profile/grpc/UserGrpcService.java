@@ -98,6 +98,9 @@ public class UserGrpcService extends UserGrpcServiceGrpc.UserGrpcServiceImplBase
 			responseProto = UserNamesResponseProto.newBuilder().setStatus("Status 200")
 													.setFirstName(user.get().getFirstName()).setLastName(user.get().getLastName()).build();
 
+		responseObserver.onNext(responseProto);
+		responseObserver.onCompleted();
+
 	}
 	public void getEmail(EmailProto request, StreamObserver<EmailResponseProto> responseObserver) {
 
