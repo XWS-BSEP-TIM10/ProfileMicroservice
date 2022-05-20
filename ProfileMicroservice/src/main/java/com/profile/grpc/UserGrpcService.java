@@ -65,26 +65,40 @@ public class UserGrpcService extends UserGrpcServiceGrpc.UserGrpcServiceImplBase
 		
 		List<User> users = service.findByFirstNameAndLastName(request.getFirstName(), request.getLastName());
 		List<UserProto> protoUsers = new ArrayList<>();
-		
-		
+
 		for(User user:users) {
-			List<ExperienceProto> experiences = new ArrayList<>();
-			List<InterestProto> interests = new ArrayList<>();
-			for(Experience experience: user.getExperiences()) {
-				experiences.add(ExperienceProto.newBuilder().setId(experience.getId()).setInstitution(experience.getInstitution()).setPosition(experience.getPosition()).setFromDate(iso8601Formatter.format(experience.getFromDate())).setToDate(iso8601Formatter.format(experience.getToDate())).setDescription(experience.getDescription()).setType(experience.getType().toString()).build());
-			}
-			for(Interest interest: user.getInterests()) {
-				interests.add(InterestProto.newBuilder().setId(interest.getId()).setDescription(interest.getDescription()).build());
-			}
-			UserProto newUser = UserProto.newBuilder().setUuid(user.getId()).setFirstName(user.getFirstName()).setLastName(user.getLastName()).setEmail(user.getEmail()).setPhoneNumber(user.getPhoneNumber()).setGender(user.getGender().toString()).setDateOfBirth(iso8601Formatter.format(user.getDateOfBirth())).setUsername(user.getUsername()).setBiography(user.getBiography()).addAllExperiences(experiences).addAllInterests(interests).build();
+			List<ExperienceProto> experiences = getExperiences(user);
+			List<InterestProto> interests = getInterests(user);
+			UserProto newUser = UserProto.newBuilder().setUuid(user.getId()).setFirstName(user.getFirstName())
+					.setLastName(user.getLastName()).setEmail(user.getEmail())
+					.setPhoneNumber(user.getPhoneNumber())
+					.setGender(user.getGender().toString())
+					.setDateOfBirth(iso8601Formatter.format(user.getDateOfBirth()))
+					.setUsername(user.getUsername()).setBiography(user.getBiography())
+					.addAllExperiences(experiences).addAllInterests(interests).build();
 			protoUsers.add(newUser);
-			
 		}
 		
 		responseProto = FindUserResponseProto.newBuilder().addAllUsers(protoUsers).setStatus("Status 200").build();
 		
 		responseObserver.onNext(responseProto);
         responseObserver.onCompleted();
+	}
+
+	private List<ExperienceProto> getExperiences(User user) {
+		List<ExperienceProto> experiences = new ArrayList<>();
+		for(Experience experience: user.getExperiences()) {
+			experiences.add(ExperienceProto.newBuilder().setId(experience.getId()).setInstitution(experience.getInstitution()).setPosition(experience.getPosition()).setFromDate(iso8601Formatter.format(experience.getFromDate())).setToDate(iso8601Formatter.format(experience.getToDate())).setDescription(experience.getDescription()).setType(experience.getType().toString()).build());
+		}
+		return experiences;
+	}
+
+	private List<InterestProto> getInterests(User user) {
+		List<InterestProto> interests = new ArrayList<>();
+		for(Interest interest: user.getInterests()) {
+			interests.add(InterestProto.newBuilder().setId(interest.getId()).setDescription(interest.getDescription()).build());
+		}
+		return interests;
 	}
 
 	@Override
@@ -104,13 +118,10 @@ public class UserGrpcService extends UserGrpcServiceGrpc.UserGrpcServiceImplBase
 	}
 	public void getEmail(EmailProto request, StreamObserver<EmailResponseProto> responseObserver) {
 
-		User user = service.findById(request.getId()).get();
+		Optional<User> user = service.findById(request.getId());
 		EmailResponseProto responseProto;
-		if(user != null) {
-			responseProto = EmailResponseProto.newBuilder().setEmail(user.getEmail()).setStatus("Status 200").build();
-		}else{
-			responseProto = EmailResponseProto.newBuilder().setEmail("").setStatus("Status 404").build();
-		}
+		responseProto = user.map(value -> EmailResponseProto.newBuilder().setEmail(value.getEmail()).setStatus("Status 200").build())
+				.orElseGet(() -> EmailResponseProto.newBuilder().setEmail("").setStatus("Status 404").build());
 
 		responseObserver.onNext(responseProto);
 		responseObserver.onCompleted();
@@ -127,6 +138,32 @@ public class UserGrpcService extends UserGrpcServiceGrpc.UserGrpcServiceImplBase
 		}else{
 			responseProto = IdResponseProto.newBuilder().setId("").setStatus("Status 400").build();
 		}
+		responseObserver.onNext(responseProto);
+		responseObserver.onCompleted();
+
+	}
+
+	@Override
+	public void getById(UserIdProto request, StreamObserver<UserResponseProto> responseObserver) {
+		Optional<User> user = service.findById(request.getId());
+		UserResponseProto responseProto;
+
+		if(user.isPresent()) {
+			List<ExperienceProto> experiences = getExperiences(user.get());
+			List<InterestProto> interests = getInterests(user.get());
+			UserProto userProto = UserProto.newBuilder().setUuid(user.get().getId())
+					.setFirstName(user.get().getFirstName())
+					.setLastName(user.get().getLastName()).setEmail(user.get().getEmail())
+					.setPhoneNumber(user.get().getPhoneNumber())
+					.setGender(user.get().getGender().toString())
+					.setDateOfBirth(iso8601Formatter.format(user.get().getDateOfBirth()))
+					.setUsername(user.get().getUsername()).setBiography(user.get().getBiography())
+					.addAllExperiences(experiences).addAllInterests(interests).build();
+			responseProto = UserResponseProto.newBuilder().setUser(userProto).setStatus("Status 200").build();
+		}
+		else
+			responseProto = UserResponseProto.newBuilder().setStatus("Status 404").build();
+
 		responseObserver.onNext(responseProto);
 		responseObserver.onCompleted();
 
