@@ -88,7 +88,12 @@ public class UserGrpcService extends UserGrpcServiceGrpc.UserGrpcServiceImplBase
 	private List<ExperienceProto> getExperiences(User user) {
 		List<ExperienceProto> experiences = new ArrayList<>();
 		for(Experience experience: user.getExperiences()) {
-			experiences.add(ExperienceProto.newBuilder().setId(experience.getId()).setInstitution(experience.getInstitution()).setPosition(experience.getPosition()).setFromDate(iso8601Formatter.format(experience.getFromDate())).setToDate(iso8601Formatter.format(experience.getToDate())).setDescription(experience.getDescription()).setType(experience.getType().toString()).build());
+			experiences.add(ExperienceProto.newBuilder()
+					.setId(experience.getId()).setInstitution(experience.getInstitution())
+					.setPosition(experience.getPosition()).setFromDate(iso8601Formatter.format(experience.getFromDate()))
+					.setToDate(experience.getToDate() == null ? "Present" : iso8601Formatter.format(experience.getToDate()))
+					.setDescription(experience.getDescription()).
+					setType(experience.getType().toString()).build());
 		}
 		return experiences;
 	}
