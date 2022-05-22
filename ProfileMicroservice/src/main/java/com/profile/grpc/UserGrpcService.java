@@ -135,14 +135,14 @@ public class UserGrpcService extends UserGrpcServiceGrpc.UserGrpcServiceImplBase
 	@Override
 	public void getId(IdProto request, StreamObserver<IdResponseProto> responseObserver) {
 
-		String id = service.findIdByEmail(request.getEmail());
 		IdResponseProto responseProto;
-
-		if(id != null) {
+		try {
+			String id = service.findIdByEmail(request.getEmail());
 			responseProto = IdResponseProto.newBuilder().setId(id).setStatus("Status 200").build();
-		}else{
+		}catch(NullPointerException ex){
 			responseProto = IdResponseProto.newBuilder().setId("").setStatus("Status 400").build();
 		}
+
 		responseObserver.onNext(responseProto);
 		responseObserver.onCompleted();
 
