@@ -38,7 +38,7 @@ public class UserController {
             if (createdUser == null)
                 return ResponseEntity.ok(new AuthSagaResponseDTO(false, "failed"));
             return ResponseEntity.ok(new AuthSagaResponseDTO(createdUser.getId(), true, "sucess"));
-        } catch (ParseException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().build();
         }
