@@ -31,8 +31,24 @@ public class UserServiceImpl implements UserService {
     @Override
     public User create(User user) {
         User existingUser = userRepository.findByUsername(user.getUsername());
-        if (existingUser != null) return null;
+        if (existingUser != null) {
+            return updateProfileUser(user);
+        };
         return userRepository.save(user);
+    }
+
+    private User updateProfileUser(User user) {
+
+        User existingUser = userRepository.findById(user.getId()).get();
+        existingUser.setFirstName(user.getFirstName());
+        existingUser.setUsername(user.getUsername());
+        existingUser.setLastName(user.getLastName());
+        existingUser.setPhoneNumber(user.getPhoneNumber());
+        existingUser.setGender(user.getGender());
+        existingUser.setDateOfBirth(user.getDateOfBirth());
+        existingUser.setUsername(user.getUsername());
+        existingUser.setBiography(user.getBiography());
+        return userRepository.save(existingUser);
     }
 
     @Override
@@ -124,6 +140,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String findIdByEmail(String email) {
+        if(userRepository.findByEmail(email) == null)
+            return null;
         return userRepository.findByEmail(email).getId();
     }
 
