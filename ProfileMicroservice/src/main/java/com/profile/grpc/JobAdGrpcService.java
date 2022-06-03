@@ -10,6 +10,8 @@ import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 import proto.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -56,6 +58,35 @@ public class JobAdGrpcService extends JobAdGrpcServiceGrpc.JobAdGrpcServiceImplB
                         .setCompany(addedJobAd.getCompany())
                         .addAllRequirements(jobAd.getRequirements().stream().map(Requirement::getName).toList())
                         .build();
+        }
+        responseObserver.onNext(responseProto);
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void getUserJobAds(GetJobAdsRequestProto request, StreamObserver<GetJobAdsResponseProto> responseObserver) {
+        GetJobAdsResponseProto responseProto;
+        Optional<User> user = userService.findById(request.getUserId());
+        if(user.isEmpty())
+            responseProto = GetJobAdsResponseProto.newBuilder().setStatus("Status 404").build();
+        else {
+            List<JobAd> jobAds = jobAdService.findByUser(user.get());
+            List<UserJobAdProto> jobAdProtos = new ArrayList<>();
+            for(JobAd jobAd : jobAds){
+                UserJobAdProto jobAdProto = UserJobAdProto.newBuilder()
+                        .setUserId(jobAd.getUser().getId())
+                        .setFirstName(jobAd.getUser().getFirstName())
+                        .setLastName(jobAd.getUser().getLastName())
+                        .setTitle(jobAd.getTitle())
+                        .setPosition(jobAd.getPosition())
+                        .setDescription(jobAd.getDescription())
+                        .setCompany(jobAd.getCompany())
+                        .addAllRequirements(jobAd.getRequirements().stream().map(Requirement::getName).toList())
+                        .build();
+                jobAdProtos.add(jobAdProto);
+            }
+
+            responseProto = GetJobAdsResponseProto.newBuilder().addAllJobAds(jobAdProtos).setStatus("Status 200").build();
         }
         responseObserver.onNext(responseProto);
         responseObserver.onCompleted();
