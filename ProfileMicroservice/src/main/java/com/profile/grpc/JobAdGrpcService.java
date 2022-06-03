@@ -8,13 +8,20 @@ import com.profile.service.RequirementService;
 import com.profile.service.UserService;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
-import proto.*;
+import proto.GetJobAdsRequestProto;
+import proto.GetJobAdsResponseProto;
+import proto.JobAdGrpcServiceGrpc;
+import proto.JobAdProto;
+import proto.JobAdResponseProto;
+import proto.UserJobAdProto;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @GrpcService
-public class JobAdGrpcService extends JobAdGrpcServiceGrpc.JobAdGrpcServiceImplBase{
+public class JobAdGrpcService extends JobAdGrpcServiceGrpc.JobAdGrpcServiceImplBase {
 
     private final JobAdService jobAdService;
     private final UserService userService;
@@ -30,15 +37,15 @@ public class JobAdGrpcService extends JobAdGrpcServiceGrpc.JobAdGrpcServiceImplB
     public void addNewJobAd(JobAdProto request, StreamObserver<JobAdResponseProto> responseObserver) {
         JobAdResponseProto responseProto;
         Optional<User> user = userService.findById(request.getUserId());
-        if(user.isEmpty()) {
+        if (user.isEmpty()) {
             responseProto = JobAdResponseProto.newBuilder().setStatus("Status 404").build();
         } else {
             JobAd jobAd = new JobAd(UUID.randomUUID().toString(),
                     user.get(), request.getTitle(), request.getPosition(),
                     request.getDescription(), request.getCompany());
-            for(String req : request.getRequirementsList()) {
+            for (String req : request.getRequirementsList()) {
                 Requirement newReq = new Requirement(req);
-                if(!jobAd.getRequirements().contains(newReq)) {
+                if (!jobAd.getRequirements().contains(newReq)) {
                     Requirement savedReq = requirementService.addNewRequirement(newReq);
                     jobAd.getRequirements().add(savedReq);
                 }
@@ -65,12 +72,12 @@ public class JobAdGrpcService extends JobAdGrpcServiceGrpc.JobAdGrpcServiceImplB
     public void getUserJobAds(GetJobAdsRequestProto request, StreamObserver<GetJobAdsResponseProto> responseObserver) {
         GetJobAdsResponseProto responseProto;
         Optional<User> user = userService.findById(request.getUserId());
-        if(user.isEmpty())
+        if (user.isEmpty())
             responseProto = GetJobAdsResponseProto.newBuilder().setStatus("Status 404").build();
         else {
             List<JobAd> jobAds = jobAdService.findByUser(user.get());
             List<UserJobAdProto> jobAdProtos = new ArrayList<>();
-            for(JobAd jobAd : jobAds){
+            for (JobAd jobAd : jobAds) {
                 UserJobAdProto jobAdProto = UserJobAdProto.newBuilder()
                         .setUserId(jobAd.getUser().getId())
                         .setFirstName(jobAd.getUser().getFirstName())
