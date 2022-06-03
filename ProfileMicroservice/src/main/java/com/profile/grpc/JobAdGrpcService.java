@@ -10,10 +10,8 @@ import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 import proto.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @GrpcService
 public class JobAdGrpcService extends JobAdGrpcServiceGrpc.JobAdGrpcServiceImplBase{
@@ -21,6 +19,7 @@ public class JobAdGrpcService extends JobAdGrpcServiceGrpc.JobAdGrpcServiceImplB
     private final JobAdService jobAdService;
     private final UserService userService;
     private final RequirementService requirementService;
+    SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy");
 
     public JobAdGrpcService(JobAdService jobAdService, UserService userService, RequirementService requirementService) {
         this.jobAdService = jobAdService;
@@ -37,8 +36,8 @@ public class JobAdGrpcService extends JobAdGrpcServiceGrpc.JobAdGrpcServiceImplB
         } else {
             JobAd jobAd = new JobAd(UUID.randomUUID().toString(),
                     user.get(), request.getTitle(), request.getPosition(),
-                    request.getDescription(), request.getCompany());
-            for(String req : request.getRequirementsList()) {
+                    request.getDescription(), new Date(), request.getCompany());
+            for (String req : request.getRequirementsList()) {
                 Requirement newReq = new Requirement(req);
                 if(!jobAd.getRequirements().contains(newReq)) {
                     Requirement savedReq = requirementService.addNewRequirement(newReq);
@@ -55,6 +54,7 @@ public class JobAdGrpcService extends JobAdGrpcServiceGrpc.JobAdGrpcServiceImplB
                         .setTitle(addedJobAd.getTitle())
                         .setPosition(addedJobAd.getPosition())
                         .setDescription(addedJobAd.getDescription())
+                        .setCreationDate(dateFormatter.format(addedJobAd.getCreationDate()))
                         .setCompany(addedJobAd.getCompany())
                         .addAllRequirements(jobAd.getRequirements().stream().map(Requirement::getName).toList())
                         .build();
@@ -80,6 +80,7 @@ public class JobAdGrpcService extends JobAdGrpcServiceGrpc.JobAdGrpcServiceImplB
                         .setTitle(jobAd.getTitle())
                         .setPosition(jobAd.getPosition())
                         .setDescription(jobAd.getDescription())
+                        .setCreationDate(dateFormatter.format(jobAd.getCreationDate()))
                         .setCompany(jobAd.getCompany())
                         .addAllRequirements(jobAd.getRequirements().stream().map(Requirement::getName).toList())
                         .build();

@@ -1,6 +1,7 @@
 package com.profile.model;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,6 +20,8 @@ public class JobAd {
 
     private String description;
 
+    private Date creationDate;
+
     private String company;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -27,12 +30,13 @@ public class JobAd {
     public JobAd() {
     }
 
-    public JobAd(String id, User recruiter, String title, String position, String description, String company) {
+    public JobAd(String id, User recruiter, String title, String position, String description, Date creationDate, String company) {
         this.id = id;
         this.user = recruiter;
         this.title = title;
         this.position = position;
         this.description = description;
+        this.creationDate = creationDate;
         this.company = company;
     }
 
@@ -54,6 +58,10 @@ public class JobAd {
 
     public String getDescription() {
         return description;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
     }
 
     public String getCompany() {
