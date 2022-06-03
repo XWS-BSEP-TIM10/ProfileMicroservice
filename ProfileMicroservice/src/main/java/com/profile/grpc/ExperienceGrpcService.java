@@ -37,10 +37,10 @@ public class ExperienceGrpcService extends ExperienceGrpcServiceGrpc.ExperienceG
 			    NewExperienceDTO dto = new NewExperienceDTO(request.getUserId(),request.getInstitution(),request.getPosition(),request.getFromDate(),request.getToDate(),request.getDescription(),request.getType());
 	            Experience newExperience = new Experience(dto);
 	            newExperience.setFromDate(new SimpleDateFormat("dd/MM/yyyy").parse(dto.getFromDate()));
-				if(!dto.getToDate().equals("Present"))
-	            	newExperience.setToDate(new SimpleDateFormat("dd/MM/yyyy").parse(dto.getToDate()));
-				else
+				if(dto.getToDate().equals(""))
 					newExperience.setToDate(null);
+				else
+					newExperience.setToDate(new SimpleDateFormat("dd/MM/yyyy").parse(dto.getToDate()));
 	            Experience addedExperience = service.add(dto.getUserId(), newExperience);
 	            if(addedExperience == null)
 	            	responseProto= NewExperienceResponseProto.newBuilder().setStatus("Status 404").build();
@@ -63,10 +63,10 @@ public class ExperienceGrpcService extends ExperienceGrpcServiceGrpc.ExperienceG
 				NewExperienceDTO dto = new NewExperienceDTO(request.getUserId(),request.getInstitution(),request.getPosition(),request.getFromDate(),request.getToDate(),request.getDescription(),request.getType());
 	            Experience newExperience = new Experience(dto);
 	            newExperience.setFromDate(new SimpleDateFormat("dd/MM/yyyy").parse(dto.getFromDate()));
-				if(!dto.getToDate().equals("Present"))
-					newExperience.setToDate(new SimpleDateFormat("dd/MM/yyyy").parse(dto.getToDate()));
-				else
+				if(dto.getToDate().equals(""))
 					newExperience.setToDate(null);
+				else
+					newExperience.setToDate(new SimpleDateFormat("dd/MM/yyyy").parse(dto.getToDate()));
 	            Experience updatedExperience = service.update(request.getId(), newExperience);
 	            if (updatedExperience == null)
 	            	responseProto= UpdateExperienceResponseProto.newBuilder().setStatus("Status 404").build();

@@ -30,8 +30,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User create(User user) {
-        User existingUser = userRepository.findByUsername(user.getUsername());
-        if (existingUser != null) {
+        if (userRepository.findById(user.getId()).isPresent()) {
             return updateProfileUser(user);
         };
         return userRepository.save(user);
