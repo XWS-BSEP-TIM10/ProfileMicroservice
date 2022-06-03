@@ -18,10 +18,10 @@ public class RequirementServiceImpl implements RequirementService {
     }
 
     @Override
-    public void addNewRequirement(Requirement requirement) {
+    public Requirement addNewRequirement(Requirement requirement) {
         Optional<Requirement> existingRequirement = repository.getByName(requirement.getName());
-        if(existingRequirement.isPresent()) return;
+        if(existingRequirement.isPresent()) return existingRequirement.get();
         requirement.setId(UUID.randomUUID().toString());
-        repository.save(requirement);
+        return repository.save(requirement);
     }
 }
