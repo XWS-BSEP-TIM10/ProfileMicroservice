@@ -21,7 +21,7 @@ public class JobAd {
 
     private String company;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private Set<Requirement> requirements = new HashSet<>();
 
     public JobAd() {
