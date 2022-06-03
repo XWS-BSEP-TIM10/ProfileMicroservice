@@ -1,7 +1,8 @@
 package com.profile.model;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class JobAd {
@@ -20,8 +21,8 @@ public class JobAd {
 
     private String company;
 
-    @ManyToMany(cascade = CascadeType.PERSIST)
-    private List<Requirement> requirements;
+    @ManyToMany
+    private Set<Requirement> requirements = new HashSet<>();
 
     public JobAd() {
     }
@@ -59,7 +60,7 @@ public class JobAd {
         return company;
     }
 
-    public List<Requirement> getRequirements() {
+    public Set<Requirement> getRequirements() {
         return requirements;
     }
 }

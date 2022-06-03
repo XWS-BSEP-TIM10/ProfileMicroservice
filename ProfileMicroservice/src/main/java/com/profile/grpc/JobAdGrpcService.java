@@ -10,8 +10,6 @@ import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 import proto.*;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -31,7 +29,6 @@ public class JobAdGrpcService extends JobAdGrpcServiceGrpc.JobAdGrpcServiceImplB
     @Override
     public void addNewJobAd(JobAdProto request, StreamObserver<JobAdResponseProto> responseObserver) {
         JobAdResponseProto responseProto;
-
         Optional<User> user = userService.findById(request.getUserId());
         if(user.isEmpty()) {
             responseProto = JobAdResponseProto.newBuilder().setStatus("Status 404").build();
@@ -39,7 +36,13 @@ public class JobAdGrpcService extends JobAdGrpcServiceGrpc.JobAdGrpcServiceImplB
             JobAd jobAd = new JobAd(UUID.randomUUID().toString(),
                     user.get(), request.getTitle(), request.getPosition(),
                     request.getDescription(), request.getCompany());
-
+            for(String req : request.getRequirementsList()) {
+                Requirement newReq = new Requirement(req);
+                if(!jobAd.getRequirements().contains(newReq)) {
+                    Requirement savedReq = requirementService.addNewRequirement(newReq);
+                    jobAd.getRequirements().add(savedReq);
+                }
+            }
             JobAd addedJobAd = jobAdService.save(jobAd);
             if (addedJobAd == null)
                 responseProto = JobAdResponseProto.newBuilder().setStatus("Status 500").build();
@@ -51,7 +54,7 @@ public class JobAdGrpcService extends JobAdGrpcServiceGrpc.JobAdGrpcServiceImplB
                         .setPosition(addedJobAd.getPosition())
                         .setDescription(addedJobAd.getDescription())
                         .setCompany(addedJobAd.getCompany())
-                        .addAllRequirements(request.getRequirementsList())
+                        .addAllRequirements(jobAd.getRequirements().stream().map(Requirement::getName).toList())
                         .build();
         }
         responseObserver.onNext(responseProto);
