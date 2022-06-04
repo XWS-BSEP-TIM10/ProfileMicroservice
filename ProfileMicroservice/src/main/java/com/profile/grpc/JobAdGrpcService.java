@@ -8,12 +8,7 @@ import com.profile.service.RequirementService;
 import com.profile.service.UserService;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
-import proto.GetJobAdsRequestProto;
-import proto.GetJobAdsResponseProto;
-import proto.JobAdGrpcServiceGrpc;
-import proto.JobAdProto;
-import proto.JobAdResponseProto;
-import proto.UserJobAdProto;
+import proto.*;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
