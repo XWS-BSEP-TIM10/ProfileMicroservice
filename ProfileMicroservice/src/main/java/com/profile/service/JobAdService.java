@@ -9,4 +9,6 @@ public interface JobAdService {
     JobAd save(JobAd jobAd);
 
     List<JobAd> findByUser(User user);
+
+    List<JobAd> searchByPosition(String searchParam);
 }
