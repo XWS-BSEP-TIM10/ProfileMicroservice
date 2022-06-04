@@ -26,4 +26,9 @@ public class JobAdServiceImpl implements JobAdService {
     public List<JobAd> findByUser(User user) {
         return repository.findAllByUser(user);
     }
+
+    @Override
+    public List<JobAd> searchByPosition(String searchParam) {
+        return repository.searchByPosition(searchParam);
+    }
 }
