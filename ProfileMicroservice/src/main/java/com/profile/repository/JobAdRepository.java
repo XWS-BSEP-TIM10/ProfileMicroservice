@@ -13,6 +13,6 @@ import java.util.List;
 public interface JobAdRepository extends JpaRepository<JobAd, String> {
     List<JobAd> findAllByUser(User user);
 
-    @Query("select u from JobAd u where u.position like concat('%',:position,'%') ")
+    @Query("select u from JobAd u where upper(u.position) like concat('%',upper(:position) ,'%') ")
    List<JobAd> searchByPosition(@Param("position") String position);
 }
