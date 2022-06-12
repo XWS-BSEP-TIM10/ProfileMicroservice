@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.profile.dto.NewExperienceDTO;
 import com.profile.model.Experience;
 import com.profile.service.ExperienceService;
+import com.profile.service.LoggerService;
+import com.profile.service.UserService;
+import com.profile.service.impl.LoggerServiceImpl;
 
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
@@ -24,10 +27,14 @@ import proto.UpdateExperienceResponseProto;
 public class ExperienceGrpcService extends ExperienceGrpcServiceGrpc.ExperienceGrpcServiceImplBase{
 	
 	private final ExperienceService service;
+	private final LoggerService loggerService;
+	private final UserService userService;
 	
 	@Autowired
-	public ExperienceGrpcService(ExperienceService experienceService) {
+	public ExperienceGrpcService(ExperienceService experienceService, UserService userService) {
 		this.service = experienceService;
+		this.loggerService = new LoggerServiceImpl(this.getClass());
+		this.userService = userService;
 	}
 	
 	@Override
@@ -42,13 +49,18 @@ public class ExperienceGrpcService extends ExperienceGrpcServiceGrpc.ExperienceG
 				else
 					newExperience.setToDate(new SimpleDateFormat("dd/MM/yyyy").parse(dto.getToDate()));
 	            Experience addedExperience = service.add(dto.getUserId(), newExperience);
-	            if(addedExperience == null)
+	            if(addedExperience == null) {
 	            	responseProto= NewExperienceResponseProto.newBuilder().setStatus("Status 404").build();
-	            else
+	            	loggerService.addExperienceUserNotFound(dto.getUserId());
+	            }
+	            else {
 					responseProto = NewExperienceResponseProto.newBuilder().setStatus("Status 200").setId(addedExperience.getId()).setPosition(addedExperience.getPosition()).setFromDate(dto.getFromDate()).setToDate(dto.getToDate()).setDescription(addedExperience.getDescription()).setType(dto.getType()).setInstitution(dto.getInstitution()).build();
+					loggerService.addExperience(userService.findById(dto.getUserId()).get().getEmail());
+	            }
 	        } catch (ParseException e) {
 	            e.printStackTrace();
 	            responseProto= NewExperienceResponseProto.newBuilder().setStatus("Status 400").build();
+	            loggerService.addExperienceBadDate(request.getUserId());
 	        }
 		 	
 		 	responseObserver.onNext(responseProto);
@@ -68,13 +80,18 @@ public class ExperienceGrpcService extends ExperienceGrpcServiceGrpc.ExperienceG
 				else
 					newExperience.setToDate(new SimpleDateFormat("dd/MM/yyyy").parse(dto.getToDate()));
 	            Experience updatedExperience = service.update(request.getId(), newExperience);
-	            if (updatedExperience == null)
+	            if (updatedExperience == null) {
 	            	responseProto= UpdateExperienceResponseProto.newBuilder().setStatus("Status 404").build();
-				else
+	            	loggerService.updateExperienceNotFound(String.valueOf(request.getId()));
+	            }
+				else {
 	            	responseProto = UpdateExperienceResponseProto.newBuilder().setStatus("Status 200").setId(updatedExperience.getId()).setPosition(updatedExperience.getPosition()).setFromDate(dto.getFromDate()).setToDate(dto.getToDate()).setDescription(updatedExperience.getDescription()).setType(dto.getType()).setInstitution(dto.getInstitution()).build();
+	            	loggerService.updateExperience(String.valueOf(request.getId()), request.getUserId());
+				}
 	        } catch (ParseException e) {
 	            e.printStackTrace();
 	            responseProto= UpdateExperienceResponseProto.newBuilder().setStatus("Status 400").build();
+	            loggerService.addExperienceBadDate(request.getUserId());
 	        }
 		 	
 		 	responseObserver.onNext(responseProto);
@@ -87,9 +104,15 @@ public class ExperienceGrpcService extends ExperienceGrpcServiceGrpc.ExperienceG
 			
 			boolean success = service.remove(request.getId());
 	        if(!success)
+	        {
 				responseProto= RemoveExperienceResponseProto.newBuilder().setStatus("Status 404").build();
+				loggerService.deleteExperienceNotFound(String.valueOf(request.getId()));
+	        }
 	        else
+	        {
 				responseProto= RemoveExperienceResponseProto.newBuilder().setStatus("Status 200").build();
+				loggerService.deleteExperience(String.valueOf(request.getId()));
+	        }
 		 	
 		 	responseObserver.onNext(responseProto);
 	        responseObserver.onCompleted();
