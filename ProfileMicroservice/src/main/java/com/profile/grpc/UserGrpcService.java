@@ -16,7 +16,9 @@ import com.profile.model.Experience;
 import com.profile.model.Interest;
 import com.profile.model.User;
 import com.profile.saga.dto.OrchestratorResponseDTO;
+import com.profile.service.LoggerService;
 import com.profile.service.UserService;
+import com.profile.service.impl.LoggerServiceImpl;
 
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
@@ -27,10 +29,12 @@ public class UserGrpcService extends UserGrpcServiceGrpc.UserGrpcServiceImplBase
 	
 	private final UserService service;
 	private static final SimpleDateFormat iso8601Formatter = new SimpleDateFormat("dd/MM/yyyy");
+	private final LoggerService loggerService;
 	
 	@Autowired
 	public UserGrpcService(UserService userService) {
 		this.service = userService;
+		this.loggerService = new LoggerServiceImpl(this.getClass());
 	}
 	
 	@Override
@@ -43,15 +47,19 @@ public class UserGrpcService extends UserGrpcServiceGrpc.UserGrpcServiceImplBase
 	            user.setDateOfBirth(new SimpleDateFormat("dd/MM/yyyy").parse(dto.getDateOfBirth()));
 	            OrchestratorResponseDTO response = service.updateUser(user).block();
 	            responseProto= UpdateUserResponseProto.newBuilder().setStatus("Status 200").setSuccess(response.isSuccess()).setMessage(response.getMessage()).build();
+	            loggerService.updateUser(request.getUuid());
 	        } catch (ParseException e) {
 	            e.printStackTrace();
 	            responseProto = UpdateUserResponseProto.newBuilder().setStatus("Status 400").build();
+	            loggerService.updateUserBadDate(request.getUuid());
 	        } catch (UserNotFoundException e){
 				e.printStackTrace();
 				responseProto = UpdateUserResponseProto.newBuilder().setStatus("Status 404").build();
+				loggerService.updateUserNotFound(request.getUuid());
 			} catch (UsernameAlreadyExists e) {
 				e.printStackTrace();
 				responseProto = UpdateUserResponseProto.newBuilder().setStatus("Status 409").build();
+				loggerService.updateUserUsernameAlreadyExists(request.getUuid(), request.getUsername());
 			}
 
 
@@ -80,7 +88,7 @@ public class UserGrpcService extends UserGrpcServiceGrpc.UserGrpcServiceImplBase
 		}
 		
 		responseProto = FindUserResponseProto.newBuilder().addAllUsers(protoUsers).setStatus("Status 200").build();
-		
+		loggerService.findUsers(request.getFirstName(), request.getLastName());
 		responseObserver.onNext(responseProto);
         responseObserver.onCompleted();
 	}
@@ -111,12 +119,16 @@ public class UserGrpcService extends UserGrpcServiceGrpc.UserGrpcServiceImplBase
 
 		Optional<User> user = service.findById(request.getId());
 		UserNamesResponseProto responseProto;
-		if(user.isEmpty())
+		if(user.isEmpty()) {
 			responseProto = UserNamesResponseProto.newBuilder().setStatus("Status 404").build();
+			loggerService.getFirstAndLastNameFailed(request.getId());
+		}
 		else
+		{
 			responseProto = UserNamesResponseProto.newBuilder().setStatus("Status 200")
 													.setFirstName(user.get().getFirstName()).setLastName(user.get().getLastName()).build();
-
+			loggerService.getFirstAndLastName(user.get().getEmail());
+		}
 		responseObserver.onNext(responseProto);
 		responseObserver.onCompleted();
 
@@ -125,8 +137,16 @@ public class UserGrpcService extends UserGrpcServiceGrpc.UserGrpcServiceImplBase
 
 		Optional<User> user = service.findById(request.getId());
 		EmailResponseProto responseProto;
-		responseProto = user.map(value -> EmailResponseProto.newBuilder().setEmail(value.getEmail()).setStatus("Status 200").build())
-				.orElseGet(() -> EmailResponseProto.newBuilder().setEmail("").setStatus("Status 404").build());
+		/*responseProto = user.map(value -> EmailResponseProto.newBuilder().setEmail(value.getEmail()).setStatus("Status 200").build())
+				.orElseGet(() -> EmailResponseProto.newBuilder().setEmail("").setStatus("Status 404").build());*/
+		if(user.isEmpty()) {
+			responseProto = EmailResponseProto.newBuilder().setEmail("").setStatus("Status 404").build();
+			loggerService.getEmailFailed(request.getId());
+		}
+		else {
+			responseProto = EmailResponseProto.newBuilder().setEmail(user.get().getEmail()).setStatus("Status 200").build();
+			loggerService.getEmail(user.get().getEmail());
+		}
 
 		responseObserver.onNext(responseProto);
 		responseObserver.onCompleted();
@@ -139,8 +159,10 @@ public class UserGrpcService extends UserGrpcServiceGrpc.UserGrpcServiceImplBase
 		try {
 			String id = service.findIdByEmail(request.getEmail());
 			responseProto = IdResponseProto.newBuilder().setId(id).setStatus("Status 200").build();
+			loggerService.getId(request.getEmail());
 		}catch(NullPointerException ex){
 			responseProto = IdResponseProto.newBuilder().setId("").setStatus("Status 400").build();
+			loggerService.getIdFailed(request.getEmail());
 		}
 
 		responseObserver.onNext(responseProto);
@@ -165,10 +187,13 @@ public class UserGrpcService extends UserGrpcServiceGrpc.UserGrpcServiceImplBase
 					.setUsername(user.get().getUsername()).setBiography(user.get().getBiography())
 					.addAllExperiences(experiences).addAllInterests(interests).build();
 			responseProto = UserResponseProto.newBuilder().setUser(userProto).setStatus("Status 200").build();
+			loggerService.getUserById(user.get().getEmail());
 		}
 		else
+		{
 			responseProto = UserResponseProto.newBuilder().setStatus("Status 404").build();
-
+			loggerService.getUserById(request.getId());
+		}
 		responseObserver.onNext(responseProto);
 		responseObserver.onCompleted();
 
