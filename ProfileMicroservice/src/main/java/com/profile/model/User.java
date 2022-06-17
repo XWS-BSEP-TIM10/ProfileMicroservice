@@ -2,15 +2,23 @@ package com.profile.model;
 
 import com.profile.dto.NewUserDTO;
 
-import javax.persistence.*;
-import java.util.ArrayList;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
-@Table(name="users")
+@Table(name = "users")
 public class User {
 
     @Id
@@ -45,7 +53,7 @@ public class User {
     @JoinColumn(name = "user_id")
     private Set<Experience> experiences;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade=CascadeType.PERSIST)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     private Set<Interest> interests;
 
     public User(String uuid, String firstName, String lastName, String email, String phoneNumber, Gender gender, Date dateOfBirth, String username, String biography) {
@@ -121,21 +129,21 @@ public class User {
         return biography;
     }
 
-	public Set<Experience> getExperiences() {
-		return experiences;
-	}
+    public Set<Experience> getExperiences() {
+        return experiences;
+    }
 
-	public void setExperiences(Set<Experience> experiences) {
-		this.experiences = experiences;
-	}
+    public void setExperiences(Set<Experience> experiences) {
+        this.experiences = experiences;
+    }
 
-	public Set<Interest> getInterests() {
-		return interests;
-	}
+    public Set<Interest> getInterests() {
+        return interests;
+    }
 
-	public void setInterests(Set<Interest> interests) {
-		this.interests = interests;
-	}
+    public void setInterests(Set<Interest> interests) {
+        this.interests = interests;
+    }
 
     public void setFirstName(String firstName) {
         this.firstName = firstName;

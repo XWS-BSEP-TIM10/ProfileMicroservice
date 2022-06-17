@@ -1,6 +1,7 @@
 package com.profile.saga.update;
 
 import com.profile.dto.NewUserDTO;
+import com.profile.exception.UserNotFoundException;
 import com.profile.exception.WorkflowException;
 import com.profile.model.User;
 import com.profile.saga.dto.OrchestratorResponseDTO;
@@ -15,12 +16,10 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.net.UnknownServiceException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class UpdateUserOrchestrator {
 
@@ -38,7 +37,7 @@ public class UpdateUserOrchestrator {
         return Flux.fromStream(() -> workflow.getSteps().stream())
                 .flatMap(WorkflowStep::process)
                 .handle(((aBoolean, synchronousSink) -> {
-                    if (aBoolean)
+                    if (Boolean.TRUE.equals(aBoolean))
                         synchronousSink.next(true);
                     else
                         synchronousSink.error(new WorkflowException("update user failed!"));
@@ -61,26 +60,25 @@ public class UpdateUserOrchestrator {
         User newUser = new User(userDTO);
         UpdateUserDTO newUserDTO = new UpdateUserDTO(userDTO.getUuid(), userDTO.getUsername());
 
-        Optional<User> oldUser = userService.findById(userDTO.getUuid());
-        UpdateUserDTO oldUserDTO = new UpdateUserDTO(oldUser.get().getId(), oldUser.get().getUsername());
+        User oldUser = userService.findById(userDTO.getUuid()).orElseThrow(UserNotFoundException::new);
+        UpdateUserDTO oldUserDTO = new UpdateUserDTO(oldUser.getId(), oldUser.getUsername());
 
-        if(!newUser.getUsername().equals(oldUser.get().getUsername())) {
+        if (!newUser.getUsername().equals(oldUser.getUsername())) {
             AuthUpdateWorkflowStep authWorkflowStep = new AuthUpdateWorkflowStep(authClient, newUserDTO, oldUserDTO);
             workflowSteps.add(authWorkflowStep);
         }
         try {
-			newUser.setDateOfBirth(new SimpleDateFormat("dd/MM/yyyy").parse(userDTO.getDateOfBirth()));
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
-        ProfileUpdateWorkflowStep profileWorkflowStep = new ProfileUpdateWorkflowStep(newUser, oldUser.get(), userService);
+            newUser.setDateOfBirth(new SimpleDateFormat("dd/MM/yyyy").parse(userDTO.getDateOfBirth()));
+        } catch (ParseException e) {
+            return null;
+        }
+        ProfileUpdateWorkflowStep profileWorkflowStep = new ProfileUpdateWorkflowStep(newUser, oldUser, userService);
         workflowSteps.add(profileWorkflowStep);
 
         return new Workflow(workflowSteps);
     }
 
-    private OrchestratorResponseDTO getResponseDTO( boolean success, String message) {
+    private OrchestratorResponseDTO getResponseDTO(boolean success, String message) {
         return new OrchestratorResponseDTO(success, message);
     }
 }
