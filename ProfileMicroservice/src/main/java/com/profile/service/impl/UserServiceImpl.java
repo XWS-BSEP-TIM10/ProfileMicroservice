@@ -10,6 +10,9 @@ import com.profile.repository.UserRepository;
 import com.profile.saga.dto.OrchestratorResponseDTO;
 import com.profile.saga.update.UpdateUserOrchestrator;
 import com.profile.service.UserService;
+import io.nats.client.Connection;
+import io.nats.client.Dispatcher;
+import io.nats.client.Nats;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Service;
@@ -18,6 +21,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Optional;
