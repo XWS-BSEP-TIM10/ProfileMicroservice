@@ -16,7 +16,7 @@ public class AuthUpdateWorkflowStep implements WorkflowStep {
     private final UpdateUserDTO oldUserDTO;
     private WorkflowStepStatus stepStatus = WorkflowStepStatus.PENDING;
 
-    private final String uri = "/api/v1/users";
+    private static final String URI = "/api/v1/users";
 
     public AuthUpdateWorkflowStep(WebClient webClient, UpdateUserDTO newUserDTO, UpdateUserDTO oldUserDTO) {
         this.webClient = webClient;
@@ -45,12 +45,12 @@ public class AuthUpdateWorkflowStep implements WorkflowStep {
     private Mono<Boolean> sendRequest(UpdateUserDTO userDTO) {
         return webClient
                 .put()
-                .uri(uri)
+                .uri(URI)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .body(Mono.just(userDTO), UpdateUserDTO.class)
                 .retrieve()
                 .bodyToMono(AuthResponseDTO.class)
                 .map(AuthResponseDTO::isSuccess)
-                .doOnNext(b -> this.stepStatus = b ? WorkflowStepStatus.COMPLETE : WorkflowStepStatus.FAILED);
+                .doOnNext(b -> this.stepStatus = Boolean.TRUE.equals(b) ? WorkflowStepStatus.COMPLETE : WorkflowStepStatus.FAILED);
     }
 }

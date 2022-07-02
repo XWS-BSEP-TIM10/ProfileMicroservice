@@ -4,7 +4,6 @@ import com.profile.dto.NewExperienceDTO;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.Locale;
 
 @Entity
 public class Experience {

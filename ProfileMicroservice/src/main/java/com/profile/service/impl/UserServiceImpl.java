@@ -32,13 +32,13 @@ public class UserServiceImpl implements UserService {
     public User create(User user) {
         if (userRepository.findById(user.getId()).isPresent()) {
             return updateProfileUser(user);
-        };
+        }
         return userRepository.save(user);
     }
 
     private User updateProfileUser(User user) {
 
-        User existingUser = userRepository.findById(user.getId()).get();
+        User existingUser = userRepository.findById(user.getId()).orElseThrow(UserNotFoundException::new);
         existingUser.setFirstName(user.getFirstName());
         existingUser.setUsername(user.getUsername());
         existingUser.setLastName(user.getLastName());
@@ -52,8 +52,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void removeExperience(Experience experience) {
-        for(User user : userRepository.findAll()){
-            if(user.getExperiences().contains(experience)){
+        for (User user : userRepository.findAll()) {
+            if (user.getExperiences().contains(experience)) {
                 user.getExperiences().remove(experience);
                 userRepository.save(user);
                 return;
@@ -64,7 +64,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean removeInterest(String id, Interest interest) {
         Optional<User> user = userRepository.findById(id);
-        if(user.isEmpty()) return false;
+        if (user.isEmpty()) return false;
         user.get().getInterests().remove(interest);
         userRepository.save(user.get());
         return true;
@@ -78,9 +78,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Mono<OrchestratorResponseDTO> updateUser(User user) throws UserNotFoundException, UsernameAlreadyExists {
-        if(!userExists(user.getId()))
+        if (!userExists(user.getId()))
             throw new UserNotFoundException();
-        if(usernameExists(user.getUsername(), user.getId()))
+        if (usernameExists(user.getUsername(), user.getId()))
             throw new UsernameAlreadyExists();
         NewUserDTO userDTO = new NewUserDTO(user);
         SimpleDateFormat iso8601Formatter = new SimpleDateFormat("dd/MM/yyyy");
@@ -99,8 +99,9 @@ public class UserServiceImpl implements UserService {
     }
 
     private WebClient getAuthWebClient() {
-        String authHost = System.getenv("AUTH_HOST") == null ? "localhost" : System.getenv("AUTH_HOST");
-        String authPort = System.getenv("AUTH_HOST") == null ? "8083" : System.getenv("AUTH_PORT");
+        String host = System.getenv("AUTH_HOST");
+        String authHost = host == null ? "localhost" : System.getenv("AUTH_HOST");
+        String authPort = host == null ? "8083" : System.getenv("AUTH_PORT");
         String baseUrl = String.format("http://%s:%s/", authHost, authPort);
         return WebClient.builder()
                 .baseUrl(baseUrl)
@@ -120,13 +121,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void addInterest(User user, Interest newInterest) {
-        if(!contains(user, newInterest)) user.getInterests().add(newInterest);
+        if (!contains(user, newInterest)) user.getInterests().add(newInterest);
         userRepository.save(user);
     }
 
     private boolean contains(User user, Interest newInterest) {
-        for(Interest interest : user.getInterests()) {
-            if(interest.getDescription().equals(newInterest.getDescription()))
+        for (Interest interest : user.getInterests()) {
+            if (interest.getDescription().equals(newInterest.getDescription()))
                 return true;
         }
         return false;
@@ -139,7 +140,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String findIdByEmail(String email) {
-        if(userRepository.findByEmail(email) == null)
+        if (userRepository.findByEmail(email) == null)
             return null;
         return userRepository.findByEmail(email).getId();
     }
@@ -149,8 +150,8 @@ public class UserServiceImpl implements UserService {
         user.getExperiences().add(experience);
         userRepository.save(user);
     }
-    
-    public List<User> findByFirstNameAndLastName(String firstName, String lastName){
-    	return userRepository.findAllByFirstNameAndLastName(firstName, lastName);
+
+    public List<User> findByFirstNameAndLastName(String firstName, String lastName) {
+        return userRepository.findAllByFirstNameAndLastName(firstName, lastName);
     }
 }
