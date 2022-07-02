@@ -42,8 +42,8 @@ public class UserController {
             newUser.setDateOfBirth(new SimpleDateFormat("dd/MM/yyyy").parse(dto.getDateOfBirth()));
             User createdUser = service.create(newUser);
             if (createdUser == null)
-                return ResponseEntity.ok(new AuthSagaResponseDTO(false, "failed"));
-            return ResponseEntity.ok(new AuthSagaResponseDTO(createdUser.getId(), true, "sucess"));
+                return ResponseEntity.ok(new AuthSagaResponseDTO(false, "failed", dto.getUuid()));
+            return ResponseEntity.ok(new AuthSagaResponseDTO(createdUser.getId(), true, "sucess", dto));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }

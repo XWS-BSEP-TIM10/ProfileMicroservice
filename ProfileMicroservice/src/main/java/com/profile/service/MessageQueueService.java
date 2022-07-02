@@ -8,6 +8,7 @@ import com.profile.model.User;
 import io.nats.client.Connection;
 import io.nats.client.Dispatcher;
 import io.nats.client.Nats;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -35,7 +36,7 @@ public class MessageQueueService {
         Dispatcher dispatcher = nats.createDispatcher(msg -> {
         });
 
-        dispatcher.subscribe("nats.demo.service", msg -> {
+        dispatcher.subscribe("nats.profile", msg -> {
 
             Gson gson = new Gson();
             String json = new String(msg.getData(), StandardCharsets.UTF_8);
@@ -45,11 +46,23 @@ public class MessageQueueService {
             User user = userService.create(new User(newUserDTO));
             AuthSagaResponseDTO responseDto;
             if (user == null)
-                responseDto = new AuthSagaResponseDTO(false, "failed");
+                responseDto = new AuthSagaResponseDTO(false, "failed", newUserDTO.getUuid());
             else
-                responseDto = new AuthSagaResponseDTO(user.getId(), true, "sucess");
+                responseDto = new AuthSagaResponseDTO(user.getId(), true, "sucess", newUserDTO);
 
             publish(responseDto);
+        });
+    }
+
+    @PostConstruct
+    public void subscribeRevert() {
+        Dispatcher dispatcher = nats.createDispatcher(msg -> {
+        });
+
+        dispatcher.subscribe("nats.profile.revert", msg -> {
+
+            String userId = new String(msg.getData());
+            userService.deleteById(userId);
         });
     }
 

@@ -34,6 +34,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User create(User user) {
+        if (userRepository.findByUsername(user.getUsername()) != null) {
+            return null;
+        }
         if (userRepository.findById(user.getId()).isPresent()) {
             return updateProfileUser(user);
         }

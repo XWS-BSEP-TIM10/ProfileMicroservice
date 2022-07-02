@@ -5,19 +5,23 @@ public class AuthSagaResponseDTO {
     private String id;
     private boolean success;
     private String message;
+    private NewUserDTO user;
+    private final String service = "Profile";
 
     public AuthSagaResponseDTO() {
     }
 
-    public AuthSagaResponseDTO(String id, boolean success, String message) {
+    public AuthSagaResponseDTO(String id, boolean success, String message, NewUserDTO user) {
         this.id = id;
         this.success = success;
         this.message = message;
+        this.user = user;
     }
 
-    public AuthSagaResponseDTO(boolean success, String message) {
+    public AuthSagaResponseDTO(boolean success, String message, String id) {
         this.success = success;
         this.message = message;
+        this.id = id;
     }
 
     public String getId() {
@@ -38,5 +42,17 @@ public class AuthSagaResponseDTO {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getService() {
+        return service;
+    }
+
+    public NewUserDTO getUser() {
+        return user;
     }
 }
