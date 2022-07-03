@@ -3,6 +3,7 @@ package com.profile.saga.update;
 import com.profile.exception.UserNotFoundException;
 import com.profile.model.User;
 import com.profile.saga.dto.UpdateUserDTO;
+import com.profile.saga.dto.UpdateUserStatusDTO;
 import com.profile.service.MessageQueueService;
 import com.profile.service.UserService;
 
@@ -25,5 +26,7 @@ public class UpdateUserOrchestrator {
         if (!newUser.getUsername().equals(oldUser.getUsername())) {
             messageQueue.publishUpdateUser(newUserDTO, oldUser, "nats.update.auth");
         }
+        UpdateUserStatusDTO updateUserStatusDTO = new UpdateUserStatusDTO(oldUser.getId(), newUser.isPublicProfile());
+        messageQueue.publishUpdateUserStatus(updateUserStatusDTO, "nats.update.user.connections");
     }
 }

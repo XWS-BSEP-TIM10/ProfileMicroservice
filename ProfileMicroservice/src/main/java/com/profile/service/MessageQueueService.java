@@ -7,6 +7,7 @@ import com.profile.dto.NewUserDTO;
 import com.profile.model.User;
 import com.profile.saga.dto.OrchestratorResponseDTO;
 import com.profile.saga.dto.UpdateUserDTO;
+import com.profile.saga.dto.UpdateUserStatusDTO;
 import io.nats.client.Connection;
 import io.nats.client.Dispatcher;
 import io.nats.client.Nats;
@@ -83,6 +84,13 @@ public class MessageQueueService {
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
         String json = gson.toJson(requestDTO);
+        nats.publish(serviceChannel, json.getBytes());
+    }
+
+    public void publishUpdateUserStatus(UpdateUserStatusDTO updateUserStatusDTO, String serviceChannel) {
+        GsonBuilder builder = new GsonBuilder();
+        Gson gson = builder.create();
+        String json = gson.toJson(updateUserStatusDTO);
         nats.publish(serviceChannel, json.getBytes());
     }
 
