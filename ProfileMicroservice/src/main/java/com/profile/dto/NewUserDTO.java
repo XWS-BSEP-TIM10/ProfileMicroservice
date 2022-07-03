@@ -20,7 +20,6 @@ public class NewUserDTO {
 
     private String username;
 
-
     private String biography;
 
     public NewUserDTO() {

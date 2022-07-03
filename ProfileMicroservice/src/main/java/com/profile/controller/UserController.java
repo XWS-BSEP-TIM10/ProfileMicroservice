@@ -6,7 +6,6 @@ import com.profile.dto.UpdateResponseDTO;
 import com.profile.exception.UserNotFoundException;
 import com.profile.exception.UsernameAlreadyExists;
 import com.profile.model.User;
-import com.profile.saga.dto.OrchestratorResponseDTO;
 import com.profile.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -54,10 +53,8 @@ public class UserController {
         try {
             User user = new User(dto);
             user.setDateOfBirth(new SimpleDateFormat("dd/MM/yyyy").parse(dto.getDateOfBirth()));
-            OrchestratorResponseDTO response = service.updateUser(user).block();
-            if (response == null)
-                return ResponseEntity.internalServerError().build();
-            return ResponseEntity.ok(new UpdateResponseDTO(response.isSuccess(), response.getMessage()));
+            service.updateUser(user);
+            return ResponseEntity.ok(new UpdateResponseDTO(true, "success"));
         } catch (ParseException e) {
             return ResponseEntity.badRequest().build();
         } catch (UserNotFoundException e) {
