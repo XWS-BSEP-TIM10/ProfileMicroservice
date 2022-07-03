@@ -22,10 +22,12 @@ public class NewUserDTO {
 
     private String biography;
 
+    private boolean publicProfile = true;
+
     public NewUserDTO() {
     }
 
-    public NewUserDTO(String uuid, String firstName, String lastName, String email, String phoneNumber, String gender, String dateOfBirth, String username, String biography) {
+    public NewUserDTO(String uuid, String firstName, String lastName, String email, String phoneNumber, String gender, String dateOfBirth, String username, String biography, boolean publicProfile) {
         this.uuid = uuid;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -35,6 +37,7 @@ public class NewUserDTO {
         this.dateOfBirth = dateOfBirth;
         this.username = username;
         this.biography = biography;
+        this.publicProfile = publicProfile;
     }
 
     public NewUserDTO(User user) {
@@ -119,6 +122,14 @@ public class NewUserDTO {
 
     public void setBiography(String biography) {
         this.biography = biography;
+    }
+
+    public boolean isPublicProfile() {
+        return publicProfile;
+    }
+
+    public void setPublicProfile(boolean publicProfile) {
+        this.publicProfile = publicProfile;
     }
 
     @Override

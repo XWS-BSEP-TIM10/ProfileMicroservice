@@ -49,6 +49,9 @@ public class User {
     @Column(name = "biography")
     private String biography;
 
+    @Column(name = "public_profile")
+    private boolean publicProfile;
+
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private Set<Experience> experiences;
@@ -79,6 +82,7 @@ public class User {
         this.gender = dto.getGender().equalsIgnoreCase("FEMALE") ? Gender.FEMALE : Gender.MALE;
         this.username = dto.getUsername();
         this.biography = dto.getBiography();
+        this.publicProfile = dto.isPublicProfile();
     }
 
     public User(User user) {
@@ -185,5 +189,9 @@ public class User {
 
     public void setBiography(String biography) {
         this.biography = biography;
+    }
+
+    public boolean isPublicProfile() {
+        return publicProfile;
     }
 }

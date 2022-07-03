@@ -6,7 +6,6 @@ import com.profile.exception.UsernameAlreadyExists;
 import com.profile.model.Experience;
 import com.profile.model.Interest;
 import com.profile.model.User;
-import com.profile.saga.dto.OrchestratorResponseDTO;
 import com.profile.service.LoggerService;
 import com.profile.service.UserService;
 import com.profile.service.impl.LoggerServiceImpl;
@@ -60,7 +59,7 @@ public class UserGrpcService extends UserGrpcServiceGrpc.UserGrpcServiceImplBase
         UpdateUserResponseProto responseProto;
 
         try {
-            NewUserDTO dto = new NewUserDTO(request.getUuid(), request.getFirstName(), request.getLastName(), request.getEmail(), request.getPhoneNumber(), request.getGender(), request.getDateOfBirth(), request.getUsername(), request.getBiography());
+            NewUserDTO dto = new NewUserDTO(request.getUuid(), request.getFirstName(), request.getLastName(), request.getEmail(), request.getPhoneNumber(), request.getGender(), request.getDateOfBirth(), request.getUsername(), request.getBiography(), request.getProfilePublic());
             User user = new User(dto);
             user.setDateOfBirth(new SimpleDateFormat(DATE_FORMAT).parse(dto.getDateOfBirth()));
             service.updateUser(user);
@@ -97,7 +96,9 @@ public class UserGrpcService extends UserGrpcServiceGrpc.UserGrpcServiceImplBase
                     .setGender(user.getGender().toString())
                     .setDateOfBirth(iso8601Formatter.format(user.getDateOfBirth()))
                     .setUsername(user.getUsername()).setBiography(user.getBiography())
-                    .addAllExperiences(experiences).addAllInterests(interests).build();
+                    .addAllExperiences(experiences).addAllInterests(interests)
+                    .setProfilePublic(user.isPublicProfile())
+                    .build();
             protoUsers.add(newUser);
         }
 
@@ -197,7 +198,9 @@ public class UserGrpcService extends UserGrpcServiceGrpc.UserGrpcServiceImplBase
                     .setGender(user.get().getGender().toString())
                     .setDateOfBirth(iso8601Formatter.format(user.get().getDateOfBirth()))
                     .setUsername(user.get().getUsername()).setBiography(user.get().getBiography())
-                    .addAllExperiences(experiences).addAllInterests(interests).build();
+                    .addAllExperiences(experiences).addAllInterests(interests)
+                    .setProfilePublic(user.get().isPublicProfile())
+                    .build();
             responseProto = UserResponseProto.newBuilder().setUser(userProto).setStatus(OK_STATUS).build();
             loggerService.getUserById(user.get().getEmail());
         } else {
