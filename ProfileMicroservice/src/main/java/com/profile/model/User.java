@@ -81,6 +81,20 @@ public class User {
         this.biography = dto.getBiography();
     }
 
+    public User(User user) {
+        this.id = user.getId();
+        this.firstName = user.getFirstName();
+        this.lastName = user.getLastName();
+        this.email = user.getEmail();
+        this.phoneNumber = user.getPhoneNumber();
+        this.gender = user.getGender();
+        this.dateOfBirth = user.getDateOfBirth();
+        this.username = user.getUsername();
+        this.biography = user.getBiography();
+        this.experiences = new HashSet<>(user.getExperiences());
+        this.interests = new HashSet<>(user.getInterests());
+    }
+
     public User() {
 
     }

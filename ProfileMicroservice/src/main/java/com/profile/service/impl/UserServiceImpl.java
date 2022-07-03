@@ -7,16 +7,11 @@ import com.profile.model.Experience;
 import com.profile.model.Interest;
 import com.profile.model.User;
 import com.profile.repository.UserRepository;
-import com.profile.saga.dto.OrchestratorResponseDTO;
 import com.profile.saga.update.UpdateUserOrchestrator;
 import com.profile.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
-import reactor.netty.http.client.HttpClient;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -30,6 +25,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User create(User user) {
+        if (userRepository.findByUsername(user.getUsername()) != null) {
+            return null;
+        }
         if (userRepository.findById(user.getId()).isPresent()) {
             return updateProfileUser(user);
         }
@@ -77,16 +75,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Mono<OrchestratorResponseDTO> updateUser(User user) throws UserNotFoundException, UsernameAlreadyExists {
+    public void updateUser(User user) throws UserNotFoundException, UsernameAlreadyExists {
         if (!userExists(user.getId()))
             throw new UserNotFoundException();
         if (usernameExists(user.getUsername(), user.getId()))
             throw new UsernameAlreadyExists();
-        NewUserDTO userDTO = new NewUserDTO(user);
-        SimpleDateFormat iso8601Formatter = new SimpleDateFormat("dd/MM/yyyy");
-        userDTO.setDateOfBirth(iso8601Formatter.format(user.getDateOfBirth()));
-        UpdateUserOrchestrator orchestrator = new UpdateUserOrchestrator(this, getAuthWebClient());
-        return orchestrator.updateUser(userDTO);
+        UpdateUserOrchestrator orchestrator = new UpdateUserOrchestrator(this);
+        orchestrator.updateUser(user);
     }
 
     private boolean usernameExists(String username, String id) {
@@ -96,17 +91,6 @@ public class UserServiceImpl implements UserService {
 
     private boolean userExists(String id) {
         return findById(id).isPresent();
-    }
-
-    private WebClient getAuthWebClient() {
-        String host = System.getenv("AUTH_HOST");
-        String authHost = host == null ? "localhost" : System.getenv("AUTH_HOST");
-        String authPort = host == null ? "8083" : System.getenv("AUTH_PORT");
-        String baseUrl = String.format("http://%s:%s/", authHost, authPort);
-        return WebClient.builder()
-                .baseUrl(baseUrl)
-                .clientConnector(new ReactorClientHttpConnector(HttpClient.create()))
-                .build();
     }
 
     @Override

@@ -20,7 +20,6 @@ public class NewUserDTO {
 
     private String username;
 
-
     private String biography;
 
     public NewUserDTO() {
@@ -120,5 +119,20 @@ public class NewUserDTO {
 
     public void setBiography(String biography) {
         this.biography = biography;
+    }
+
+    @Override
+    public String toString() {
+        return "NewUserDTO{" +
+                "uuid='" + uuid + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", gender='" + gender + '\'' +
+                ", dateOfBirth='" + dateOfBirth + '\'' +
+                ", username='" + username + '\'' +
+                ", biography='" + biography + '\'' +
+                '}';
     }
 }

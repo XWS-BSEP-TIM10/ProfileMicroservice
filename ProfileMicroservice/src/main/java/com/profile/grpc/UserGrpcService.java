@@ -41,7 +41,9 @@ public class UserGrpcService extends UserGrpcServiceGrpc.UserGrpcServiceImplBase
 
     private static final String DATE_FORMAT = "dd/MM/yyyy";
     private static final String OK_STATUS = "Status 200";
+    private static final String BAD_REQUEST_STATUS = "Status 400";
     private static final String NOT_FOUND_STATUS = "Status 404";
+    private static final String CONFLICT_STATUS = "Status 409";
     private final UserService service;
     private final SimpleDateFormat iso8601Formatter = new SimpleDateFormat(DATE_FORMAT);
     private final LoggerService loggerService;
@@ -61,22 +63,19 @@ public class UserGrpcService extends UserGrpcServiceGrpc.UserGrpcServiceImplBase
             NewUserDTO dto = new NewUserDTO(request.getUuid(), request.getFirstName(), request.getLastName(), request.getEmail(), request.getPhoneNumber(), request.getGender(), request.getDateOfBirth(), request.getUsername(), request.getBiography());
             User user = new User(dto);
             user.setDateOfBirth(new SimpleDateFormat(DATE_FORMAT).parse(dto.getDateOfBirth()));
-            OrchestratorResponseDTO response = service.updateUser(user).block();
-            if (response == null)
-                return;
-            responseProto = UpdateUserResponseProto.newBuilder().setStatus(OK_STATUS).setSuccess(response.isSuccess()).setMessage(response.getMessage()).build();
+            service.updateUser(user);
+            responseProto = UpdateUserResponseProto.newBuilder().setStatus(OK_STATUS).setSuccess(true).setMessage("success").build();
             loggerService.updateUser(request.getUuid());
         } catch (ParseException e) {
-            responseProto = UpdateUserResponseProto.newBuilder().setStatus("Status 400").build();
+            responseProto = UpdateUserResponseProto.newBuilder().setStatus(BAD_REQUEST_STATUS).build();
             loggerService.updateUserBadDate(request.getUuid());
         } catch (UserNotFoundException e) {
             responseProto = UpdateUserResponseProto.newBuilder().setStatus(NOT_FOUND_STATUS).build();
             loggerService.updateUserNotFound(request.getUuid());
         } catch (UsernameAlreadyExists e) {
-            responseProto = UpdateUserResponseProto.newBuilder().setStatus("Status 409").build();
+            responseProto = UpdateUserResponseProto.newBuilder().setStatus(CONFLICT_STATUS).build();
             loggerService.updateUserUsernameAlreadyExists(request.getUuid(), request.getUsername());
         }
-
 
         responseObserver.onNext(responseProto);
         responseObserver.onCompleted();
