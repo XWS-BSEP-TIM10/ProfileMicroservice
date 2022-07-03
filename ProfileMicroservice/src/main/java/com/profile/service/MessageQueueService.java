@@ -26,7 +26,12 @@ public class MessageQueueService {
     public MessageQueueService(UserService userService) {
         this.userService = userService;
         try {
-            this.nats = Nats.connect();
+            String natsURI = System.getenv("NATS_URI") == null ? "localhost" : System.getenv("NATS_URI");
+            if (natsURI.equals("localhost")) {
+                nats = Nats.connect();
+            } else {
+                nats = Nats.connect(natsURI);
+            }
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
@@ -78,7 +83,7 @@ public class MessageQueueService {
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
         String json = gson.toJson(requestDTO);
-        nats.publish(serviceChannel,  json.getBytes());
+        nats.publish(serviceChannel, json.getBytes());
     }
 
     @PostConstruct
@@ -93,6 +98,6 @@ public class MessageQueueService {
             if (!responseDTO.isSuccess()) {
                 userService.update(responseDTO.getOldUser());
             }
-        } );
+        });
     }
 }
