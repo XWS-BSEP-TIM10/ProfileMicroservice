@@ -94,7 +94,7 @@ public class UserGrpcService extends UserGrpcServiceGrpc.UserGrpcServiceImplBase
                     .setLastName(user.getLastName()).setEmail(user.getEmail())
                     .setPhoneNumber(user.getPhoneNumber())
                     .setGender(user.getGender().toString())
-                    .setDateOfBirth(iso8601Formatter.format(user.getDateOfBirth()))
+                    .setDateOfBirth(user.getDateOfBirth() == null ? "": iso8601Formatter.format(user.getDateOfBirth()))
                     .setUsername(user.getUsername()).setBiography(user.getBiography())
                     .addAllExperiences(experiences).addAllInterests(interests)
                     .setProfilePublic(user.isPublicProfile())
