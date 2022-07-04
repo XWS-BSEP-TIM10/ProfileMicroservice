@@ -43,7 +43,7 @@ public class MessageQueueService {
         Dispatcher dispatcher = nats.createDispatcher(msg -> {
         });
 
-        dispatcher.subscribe("nats.auth", msg -> {
+        dispatcher.subscribe("nats.profile", msg -> {
 
             Gson gson = new Gson();
             String json = new String(msg.getData(), StandardCharsets.UTF_8);
