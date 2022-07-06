@@ -31,4 +31,6 @@ public interface UserService {
     void updateUser(User user) throws UserNotFoundException, UsernameAlreadyExists;
     
     List<User> findByFirstNameAndLastName(String firstName, String lastName);
+
+    List<User> findByIds(List<String> ids);
 }

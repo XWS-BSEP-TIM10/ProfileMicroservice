@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -137,5 +138,16 @@ public class UserServiceImpl implements UserService {
 
     public List<User> findByFirstNameAndLastName(String firstName, String lastName) {
         return userRepository.findAllByFirstNameAndLastName(firstName, lastName);
+    }
+
+    @Override
+    public List<User> findByIds(List<String> ids){
+        List<User> users = new ArrayList<User>();
+
+        for(String id : ids){
+            users.add(userRepository.findById(id).get());
+        }
+
+        return users;
     }
 }
