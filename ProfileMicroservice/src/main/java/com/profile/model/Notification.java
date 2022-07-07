@@ -5,6 +5,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.PostPersist;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.UUID;
 
 @Entity
@@ -16,7 +17,7 @@ public class Notification {
 
     private String text;
 
-    private LocalDate creationTime;
+    private Date creationTime;
 
     public Notification() {
     }
@@ -33,12 +34,12 @@ public class Notification {
         return text;
     }
 
-    public LocalDate getCreationTime() {
+    public Date getCreationTime() {
         return creationTime;
     }
 
     @PostPersist
     public void setCreationTime() {
-        this.creationTime = LocalDate.now();
+        this.creationTime = new Date();
     }
 }
