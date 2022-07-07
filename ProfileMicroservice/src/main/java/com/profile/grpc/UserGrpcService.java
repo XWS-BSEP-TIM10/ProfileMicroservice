@@ -12,22 +12,7 @@ import com.profile.service.impl.LoggerServiceImpl;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.springframework.beans.factory.annotation.Autowired;
-import proto.EmailProto;
-import proto.EmailResponseProto;
-import proto.ExperienceProto;
-import proto.FindUserProto;
-import proto.FindUserResponseProto;
-import proto.IdProto;
-import proto.IdResponseProto;
-import proto.InterestProto;
-import proto.UpdateUserProto;
-import proto.UpdateUserResponseProto;
-import proto.UserGrpcServiceGrpc;
-import proto.UserIdProto;
-import proto.UserNamesProto;
-import proto.UserNamesResponseProto;
-import proto.UserProto;
-import proto.UserResponseProto;
+import proto.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -210,6 +195,33 @@ public class UserGrpcService extends UserGrpcServiceGrpc.UserGrpcServiceImplBase
         responseObserver.onNext(responseProto);
         responseObserver.onCompleted();
 
+    }
+
+    @Override
+    public void findProfilesById(UserIdsProto request, StreamObserver<FindUserResponseProto> responseObserver) {
+        FindUserResponseProto responseProto;
+
+        List<User> users = service.findByIds(request.getIdList());
+        List<UserProto> protoUsers = new ArrayList<>();
+
+        for (User user : users) {
+            List<ExperienceProto> experiences = getExperiences(user);
+            List<InterestProto> interests = getInterests(user);
+            UserProto newUser = UserProto.newBuilder().setUuid(user.getId()).setFirstName(user.getFirstName())
+                    .setLastName(user.getLastName()).setEmail(user.getEmail())
+                    .setPhoneNumber(user.getPhoneNumber())
+                    .setGender(user.getGender().toString())
+                    .setDateOfBirth(user.getDateOfBirth() == null ? "": iso8601Formatter.format(user.getDateOfBirth()))
+                    .setUsername(user.getUsername()).setBiography(user.getBiography())
+                    .addAllExperiences(experiences).addAllInterests(interests)
+                    .setProfilePublic(user.isPublicProfile())
+                    .build();
+            protoUsers.add(newUser);
+        }
+
+        responseProto = FindUserResponseProto.newBuilder().addAllUsers(protoUsers).setStatus(OK_STATUS).build();
+        responseObserver.onNext(responseProto);
+        responseObserver.onCompleted();
     }
 
 
