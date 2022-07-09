@@ -1,6 +1,7 @@
 package com.profile.model;
 
-import com.profile.dto.NewUserDTO;
+import com.profile.dto.NewUserDto;
+import com.profile.dto.UpdateUserDto;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -52,6 +53,15 @@ public class User {
     @Column(name = "public_profile")
     private boolean publicProfile;
 
+    @Column(name = "mute_connections_notifications")
+    private boolean muteConnectionsNotifications;
+
+    @Column(name = "mute_message_notifications")
+    private boolean muteMassageNotifications;
+
+    @Column(name = "mute_post_notifications")
+    private boolean mutePostNotifications;
+
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private Set<Experience> experiences;
@@ -71,9 +81,13 @@ public class User {
         this.biography = biography;
         this.experiences = new HashSet<>();
         this.interests = new HashSet<>();
+        this.publicProfile = true;
+        this.muteConnectionsNotifications = false;
+        this.muteMassageNotifications = false;
+        this.mutePostNotifications = false;
     }
 
-    public User(NewUserDTO dto) {
+    public User(UpdateUserDto dto) {
         this.id = dto.getUuid();
         this.firstName = dto.getFirstName();
         this.lastName = dto.getLastName();
@@ -83,6 +97,24 @@ public class User {
         this.username = dto.getUsername();
         this.biography = dto.getBiography();
         this.publicProfile = dto.isPublicProfile();
+        this.muteConnectionsNotifications = dto.isMuteConnectionsNotifications();
+        this.muteMassageNotifications = dto.isMuteMassageNotifications();
+        this.mutePostNotifications = dto.isMutePostNotifications();
+    }
+
+    public User(NewUserDto dto) {
+        this.id = dto.getUuid();
+        this.firstName = dto.getFirstName();
+        this.lastName = dto.getLastName();
+        this.email = dto.getEmail();
+        this.phoneNumber = dto.getPhoneNumber();
+        this.gender = dto.getGender().equalsIgnoreCase("FEMALE") ? Gender.FEMALE : Gender.MALE;
+        this.username = dto.getUsername();
+        this.biography = dto.getBiography();
+        this.publicProfile = true;
+        this.muteConnectionsNotifications = false;
+        this.muteMassageNotifications = false;
+        this.mutePostNotifications = false;
     }
 
     public User(User user) {
@@ -97,6 +129,9 @@ public class User {
         this.biography = user.getBiography();
         this.experiences = new HashSet<>(user.getExperiences());
         this.interests = new HashSet<>(user.getInterests());
+        this.muteConnectionsNotifications = false;
+        this.muteMassageNotifications = false;
+        this.mutePostNotifications = false;
     }
 
     public User() {
@@ -193,5 +228,33 @@ public class User {
 
     public boolean isPublicProfile() {
         return publicProfile;
+    }
+
+    public void setPublicProfile(boolean publicProfile) {
+        this.publicProfile = publicProfile;
+    }
+
+    public boolean isMuteConnectionsNotifications() {
+        return muteConnectionsNotifications;
+    }
+
+    public void setMuteConnectionsNotifications(boolean muteConnectionsNotifications) {
+        this.muteConnectionsNotifications = muteConnectionsNotifications;
+    }
+
+    public boolean isMuteMassageNotifications() {
+        return muteMassageNotifications;
+    }
+
+    public void setMuteMassageNotifications(boolean muteMassageNotifications) {
+        this.muteMassageNotifications = muteMassageNotifications;
+    }
+
+    public boolean isMutePostNotifications() {
+        return mutePostNotifications;
+    }
+
+    public void setMutePostNotifications(boolean mutePostNotifications) {
+        this.mutePostNotifications = mutePostNotifications;
     }
 }

@@ -3,7 +3,8 @@ package com.profile.service;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.profile.dto.AuthSagaResponseDTO;
-import com.profile.dto.NewUserDTO;
+import com.profile.dto.NewUserDto;
+import com.profile.dto.UpdateUserDto;
 import com.profile.model.User;
 import com.profile.saga.dto.OrchestratorResponseDTO;
 import com.profile.saga.dto.UpdateUserDTO;
@@ -47,7 +48,7 @@ public class MessageQueueService {
 
             Gson gson = new Gson();
             String json = new String(msg.getData(), StandardCharsets.UTF_8);
-            NewUserDTO newUserDTO = gson.fromJson(json, NewUserDTO.class);
+            NewUserDto newUserDTO = gson.fromJson(json, NewUserDto.class);
             System.out.println(newUserDTO);
 
             User user = userService.create(new User(newUserDTO));

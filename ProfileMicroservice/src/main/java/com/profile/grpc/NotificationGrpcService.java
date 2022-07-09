@@ -3,7 +3,10 @@ package com.profile.grpc;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import com.profile.model.User;
+import com.profile.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.profile.model.Notification;
@@ -26,12 +29,14 @@ public class NotificationGrpcService extends NotificationGrpcServiceGrpc.Notific
 
     private final NotificationService notificationService;
     private final UserNotificationService userNotificationService;
+    private final UserService userService;
     SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
     
     @Autowired
-    public NotificationGrpcService(NotificationService notificationService, UserNotificationService userNotificationService) {
+    public NotificationGrpcService(NotificationService notificationService, UserNotificationService userNotificationService, UserService userService) {
         this.notificationService = notificationService;
         this.userNotificationService = userNotificationService;
+        this.userService = userService;
     }
 
     @Override
@@ -46,8 +51,15 @@ public class NotificationGrpcService extends NotificationGrpcServiceGrpc.Notific
     @Override
     public void getNotifications(GetNotificationProto request, StreamObserver<NotificationsProto> responseObserver) {
     	List<NotificationProto> notificationProtos = new ArrayList<NotificationProto>();
-    	List<UserNotification> userNotifications = userNotificationService.findByUserId(request.getUserId());
+        Optional<User> user = userService.findById(request.getUserId());
+        List<UserNotification> userNotifications = userNotificationService.findByUserId(request.getUserId());
     	for(UserNotification userNotification:userNotifications) {
+            if(user.get().isMuteConnectionsNotifications() && userNotification.getNotification().getText().contains("connect"))
+                continue;
+            if(user.get().isMuteMassageNotifications() && userNotification.getNotification().getText().contains("message"))
+                continue;
+            if(user.get().isMutePostNotifications() && userNotification.getNotification().getText().contains("post"))
+                continue;
     		NotificationProto proto = NotificationProto.newBuilder().setId(userNotification.getNotification().getId().toString()).setRead(userNotification.isRead()).setCreationTime(dateFormatter.format(userNotification.getNotification().getCreationTime())).setText(userNotification.getNotification().getText()).build();
     		notificationProtos.add(proto);
     	}

@@ -14,6 +14,9 @@ message UpdateUserProto{
   string username = 8;
   string biography = 9;
   bool profilePublic = 10;
+  bool muteConnectionsNotifications = 11;
+  bool muteMessageNotifications = 12;
+  bool mutePostNotifications = 13;
 }
 
 message UpdateUserResponseProto{

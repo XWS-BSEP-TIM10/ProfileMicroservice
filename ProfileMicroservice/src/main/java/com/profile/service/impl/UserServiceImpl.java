@@ -1,6 +1,5 @@
 package com.profile.service.impl;
 
-import com.profile.dto.NewUserDTO;
 import com.profile.exception.UserNotFoundException;
 import com.profile.exception.UsernameAlreadyExists;
 import com.profile.model.Experience;
@@ -13,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

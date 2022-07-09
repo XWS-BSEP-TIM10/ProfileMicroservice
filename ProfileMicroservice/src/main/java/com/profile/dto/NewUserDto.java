@@ -1,8 +1,6 @@
 package com.profile.dto;
 
-import com.profile.model.User;
-
-public class NewUserDTO {
+public class NewUserDto {
 
     private String uuid;
 
@@ -22,12 +20,9 @@ public class NewUserDTO {
 
     private String biography;
 
-    private boolean publicProfile = true;
+    private boolean publicProfile;
 
-    public NewUserDTO() {
-    }
-
-    public NewUserDTO(String uuid, String firstName, String lastName, String email, String phoneNumber, String gender, String dateOfBirth, String username, String biography, boolean publicProfile) {
+    public NewUserDto(String uuid, String firstName, String lastName, String email, String phoneNumber, String gender, String dateOfBirth, String username, String biography) {
         this.uuid = uuid;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -37,18 +32,7 @@ public class NewUserDTO {
         this.dateOfBirth = dateOfBirth;
         this.username = username;
         this.biography = biography;
-        this.publicProfile = publicProfile;
-    }
-
-    public NewUserDTO(User user) {
-        this.uuid = user.getId();
-        this.firstName = user.getFirstName();
-        this.lastName = user.getLastName();
-        this.email = user.getEmail();
-        this.phoneNumber = user.getPhoneNumber();
-        this.gender = user.getGender().toString();
-        this.username = user.getUsername();
-        this.biography = user.getBiography();
+        this.publicProfile = true;
     }
 
     public String getUuid() {
@@ -115,35 +99,11 @@ public class NewUserDTO {
         this.username = username;
     }
 
-
     public String getBiography() {
         return biography;
     }
 
     public void setBiography(String biography) {
         this.biography = biography;
-    }
-
-    public boolean isPublicProfile() {
-        return publicProfile;
-    }
-
-    public void setPublicProfile(boolean publicProfile) {
-        this.publicProfile = publicProfile;
-    }
-
-    @Override
-    public String toString() {
-        return "NewUserDTO{" +
-                "uuid='" + uuid + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", email='" + email + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", gender='" + gender + '\'' +
-                ", dateOfBirth='" + dateOfBirth + '\'' +
-                ", username='" + username + '\'' +
-                ", biography='" + biography + '\'' +
-                '}';
     }
 }
