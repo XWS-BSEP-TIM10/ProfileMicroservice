@@ -3,9 +3,11 @@ package com.profile.grpc;
 import com.profile.dto.NewUserDTO;
 import com.profile.exception.UserNotFoundException;
 import com.profile.exception.UsernameAlreadyExists;
+import com.profile.model.Event;
 import com.profile.model.Experience;
 import com.profile.model.Interest;
 import com.profile.model.User;
+import com.profile.service.EventService;
 import com.profile.service.LoggerService;
 import com.profile.service.UserService;
 import com.profile.service.impl.LoggerServiceImpl;
@@ -29,13 +31,15 @@ public class UserGrpcService extends UserGrpcServiceGrpc.UserGrpcServiceImplBase
     private static final String NOT_FOUND_STATUS = "Status 404";
     private static final String CONFLICT_STATUS = "Status 409";
     private final UserService service;
+    private final EventService eventService;
     private final SimpleDateFormat iso8601Formatter = new SimpleDateFormat(DATE_FORMAT);
     private final LoggerService loggerService;
 
 
     @Autowired
-    public UserGrpcService(UserService userService) {
+    public UserGrpcService(UserService userService, EventService eventService) {
         this.service = userService;
+        this.eventService = eventService;
         this.loggerService = new LoggerServiceImpl(this.getClass());
     }
 
@@ -48,6 +52,7 @@ public class UserGrpcService extends UserGrpcServiceGrpc.UserGrpcServiceImplBase
             User user = new User(dto);
             user.setDateOfBirth(new SimpleDateFormat(DATE_FORMAT).parse(dto.getDateOfBirth()));
             service.updateUser(user);
+            eventService.save(new Event("User successfully updated profile. Username: " + request.getUsername()));
             responseProto = UpdateUserResponseProto.newBuilder().setStatus(OK_STATUS).setSuccess(true).setMessage("success").build();
             loggerService.updateUser(request.getUuid());
         } catch (ParseException e) {
@@ -224,5 +229,16 @@ public class UserGrpcService extends UserGrpcServiceGrpc.UserGrpcServiceImplBase
         responseObserver.onCompleted();
     }
 
+    @Override
+    public void getEventsProfile(ProfileEventProto request, StreamObserver<ProfileEventResponseProto> responseObserver) {
+
+        List<String> events = new ArrayList<>();
+        for(Event event : eventService.findAll()){events.add(event.getDescription());}
+
+        ProfileEventResponseProto responseProto = ProfileEventResponseProto.newBuilder().addAllEvents(events).build();
+
+        responseObserver.onNext(responseProto);
+        responseObserver.onCompleted();
+    }
 
 }

@@ -2,7 +2,9 @@ package com.profile.grpc;
 
 import com.profile.dto.NewInterestDTO;
 import com.profile.exception.UserNotFoundException;
+import com.profile.model.Event;
 import com.profile.model.Interest;
+import com.profile.service.EventService;
 import com.profile.service.InterestService;
 import com.profile.service.LoggerService;
 import com.profile.service.UserService;
@@ -22,10 +24,12 @@ public class InterestGrpcService extends InterestGrpcServiceGrpc.InterestGrpcSer
     private final InterestService service;
     private final LoggerService loggerService;
     private final UserService userService;
+    private final EventService eventService;
 
     @Autowired
-    public InterestGrpcService(InterestService interestService, UserService userService) {
+    public InterestGrpcService(InterestService interestService, UserService userService, EventService eventService) {
         this.service = interestService;
+        this.eventService = eventService;
         this.loggerService = new LoggerServiceImpl(this.getClass());
         this.userService = userService;
     }
@@ -41,6 +45,7 @@ public class InterestGrpcService extends InterestGrpcServiceGrpc.InterestGrpcSer
             responseProto = NewInterestResponseProto.newBuilder().setStatus("Status 404").build();
             loggerService.addInterestUserNotFound(request.getUserId());
         } else {
+            eventService.save(new Event("User successfully added interest. Username: " + userService.findById(request.getUserId()).get().getUsername()));
             responseProto = NewInterestResponseProto.newBuilder().setStatus("Status 200").setId(addedInterest.getId()).setDescription(addedInterest.getDescription()).build();
             loggerService.addInterest(String.valueOf(addedInterest.getId()), userService.findById(request.getUserId()).orElseThrow(UserNotFoundException::new).getEmail());
         }
@@ -57,6 +62,7 @@ public class InterestGrpcService extends InterestGrpcServiceGrpc.InterestGrpcSer
             responseProto = RemoveInterestResponseProto.newBuilder().setStatus("Status 404").build();
             loggerService.removeInterestFailed(String.valueOf(request.getId()));
         } else {
+            eventService.save(new Event("User successfully removed interest. Username: " + userService.findById(request.getUserId()).get().getUsername()));
             responseProto = RemoveInterestResponseProto.newBuilder().setStatus("Status 200").build();
             loggerService.removeInterest(String.valueOf(request.getId()), userService.findById(request.getUserId()).orElseThrow(UserNotFoundException::new).getEmail());
         }

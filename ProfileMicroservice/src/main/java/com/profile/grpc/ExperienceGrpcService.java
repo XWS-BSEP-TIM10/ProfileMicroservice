@@ -3,7 +3,9 @@ package com.profile.grpc;
 
 import com.profile.dto.NewExperienceDTO;
 import com.profile.exception.UserNotFoundException;
+import com.profile.model.Event;
 import com.profile.model.Experience;
+import com.profile.service.EventService;
 import com.profile.service.ExperienceService;
 import com.profile.service.LoggerService;
 import com.profile.service.UserService;
@@ -28,14 +30,16 @@ public class ExperienceGrpcService extends ExperienceGrpcServiceGrpc.ExperienceG
     private final ExperienceService service;
     private final LoggerService loggerService;
     private final UserService userService;
+    private final EventService eventService;
 
     private static final String DATE_FORMAT = "dd/MM/yyyy";
     private static final String OK_STATUS = "Status 200";
     private static final String NOT_FOUND_STATUS = "Status 404";
 
     @Autowired
-    public ExperienceGrpcService(ExperienceService experienceService, UserService userService) {
+    public ExperienceGrpcService(ExperienceService experienceService, UserService userService, EventService eventService) {
         this.service = experienceService;
+        this.eventService = eventService;
         this.loggerService = new LoggerServiceImpl(this.getClass());
         this.userService = userService;
     }
@@ -56,6 +60,7 @@ public class ExperienceGrpcService extends ExperienceGrpcServiceGrpc.ExperienceG
                 responseProto = NewExperienceResponseProto.newBuilder().setStatus(NOT_FOUND_STATUS).build();
                 loggerService.addExperienceUserNotFound(dto.getUserId());
             } else {
+                eventService.save(new Event("User successfully added experience. Username: " + userService.findById(request.getUserId()).get().getUsername()));
                 responseProto = NewExperienceResponseProto.newBuilder().setStatus(OK_STATUS).setId(addedExperience.getId()).setPosition(addedExperience.getPosition()).setFromDate(dto.getFromDate()).setToDate(dto.getToDate()).setDescription(addedExperience.getDescription()).setType(dto.getType()).setInstitution(dto.getInstitution()).build();
 
                 loggerService.addExperience(userService.findById(dto.getUserId()).orElseThrow(UserNotFoundException::new).getEmail());
@@ -86,6 +91,7 @@ public class ExperienceGrpcService extends ExperienceGrpcServiceGrpc.ExperienceG
                 responseProto = UpdateExperienceResponseProto.newBuilder().setStatus(NOT_FOUND_STATUS).build();
                 loggerService.updateExperienceNotFound(String.valueOf(request.getId()));
             } else {
+                eventService.save(new Event("User successfully updated experience. Username: " + userService.findById(request.getUserId()).get().getUsername()));
                 responseProto = UpdateExperienceResponseProto.newBuilder().setStatus(OK_STATUS).setId(updatedExperience.getId()).setPosition(updatedExperience.getPosition()).setFromDate(dto.getFromDate()).setToDate(dto.getToDate()).setDescription(updatedExperience.getDescription()).setType(dto.getType()).setInstitution(dto.getInstitution()).build();
                 loggerService.updateExperience(String.valueOf(request.getId()), request.getUserId());
             }
@@ -107,6 +113,7 @@ public class ExperienceGrpcService extends ExperienceGrpcServiceGrpc.ExperienceG
             responseProto = RemoveExperienceResponseProto.newBuilder().setStatus(NOT_FOUND_STATUS).build();
             loggerService.deleteExperienceNotFound(String.valueOf(request.getId()));
         } else {
+            eventService.save(new Event("User successfully removed experience. Experience: " + request.getId()));
             responseProto = RemoveExperienceResponseProto.newBuilder().setStatus(OK_STATUS).build();
             loggerService.deleteExperience(String.valueOf(request.getId()));
         }

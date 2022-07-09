@@ -1,12 +1,10 @@
 package com.profile.grpc;
 
+import com.profile.model.Event;
 import com.profile.model.JobAd;
 import com.profile.model.Requirement;
 import com.profile.model.User;
-import com.profile.service.JobAdService;
-import com.profile.service.LoggerService;
-import com.profile.service.RequirementService;
-import com.profile.service.UserService;
+import com.profile.service.*;
 import com.profile.service.impl.LoggerServiceImpl;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
@@ -31,15 +29,17 @@ public class JobAdGrpcService extends JobAdGrpcServiceGrpc.JobAdGrpcServiceImplB
     private final JobAdService jobAdService;
     private final UserService userService;
     private final RequirementService requirementService;
+    private final EventService eventService;
     SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
     private final LoggerService loggerService;
 
     private static final String OK_STATUS = "Status 200";
 
-    public JobAdGrpcService(JobAdService jobAdService, UserService userService, RequirementService requirementService) {
+    public JobAdGrpcService(JobAdService jobAdService, UserService userService, RequirementService requirementService, EventService eventService) {
         this.jobAdService = jobAdService;
         this.userService = userService;
         this.requirementService = requirementService;
+        this.eventService = eventService;
         this.loggerService = new LoggerServiceImpl(this.getClass());
     }
 
@@ -66,6 +66,7 @@ public class JobAdGrpcService extends JobAdGrpcServiceGrpc.JobAdGrpcServiceImplB
                 responseProto = JobAdResponseProto.newBuilder().setStatus("Status 500").build();
                 loggerService.addJobAdFailed(user.get().getEmail());
             } else {
+                eventService.save(new Event("User successfully added job ad. Username: " + userService.findById(request.getUserId()).get().getUsername()));
                 responseProto = JobAdResponseProto.newBuilder().setStatus(OK_STATUS)
                         .setId(addedJobAd.getId())
                         .setUserId(addedJobAd.getUser().getId())
