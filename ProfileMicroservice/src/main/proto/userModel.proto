@@ -48,6 +48,9 @@ message UserProto{
   repeated ExperienceProto experiences = 10;
   repeated InterestProto interests = 11;
   bool profilePublic = 12;
+  bool muteConnectionsNotifications = 13;
+  bool muteMessageNotifications = 14;
+  bool mutePostNotifications = 15;
 
 }
 

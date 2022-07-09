@@ -191,6 +191,9 @@ public class UserGrpcService extends UserGrpcServiceGrpc.UserGrpcServiceImplBase
                     .setUsername(user.get().getUsername()).setBiography(user.get().getBiography())
                     .addAllExperiences(experiences).addAllInterests(interests)
                     .setProfilePublic(user.get().isPublicProfile())
+                    .setMuteConnectionsNotifications(user.get().isMuteConnectionsNotifications())
+                    .setMuteMessageNotifications(user.get().isMuteMassageNotifications())
+                    .setMutePostNotifications(user.get().isMutePostNotifications())
                     .build();
             responseProto = UserResponseProto.newBuilder().setUser(userProto).setStatus(OK_STATUS).build();
             loggerService.getUserById(user.get().getEmail());
