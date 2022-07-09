@@ -1,6 +1,6 @@
 package com.profile.grpc;
 
-import com.profile.dto.NewUserDTO;
+import com.profile.dto.UpdateUserDto;
 import com.profile.exception.UserNotFoundException;
 import com.profile.exception.UsernameAlreadyExists;
 import com.profile.model.Event;
@@ -48,7 +48,8 @@ public class UserGrpcService extends UserGrpcServiceGrpc.UserGrpcServiceImplBase
         UpdateUserResponseProto responseProto;
 
         try {
-            NewUserDTO dto = new NewUserDTO(request.getUuid(), request.getFirstName(), request.getLastName(), request.getEmail(), request.getPhoneNumber(), request.getGender(), request.getDateOfBirth(), request.getUsername(), request.getBiography(), request.getProfilePublic());
+            UpdateUserDto dto = new UpdateUserDto(request.getUuid(), request.getFirstName(), request.getLastName(), request.getEmail(), request.getPhoneNumber(), request.getGender(), request.getDateOfBirth(), request.getUsername(), request.getBiography(), request.getProfilePublic(), request.getMuteConnectionsNotifications(),
+                    request.getMuteMessageNotifications(), request.getMutePostNotifications());
             User user = new User(dto);
             user.setDateOfBirth(new SimpleDateFormat(DATE_FORMAT).parse(dto.getDateOfBirth()));
             service.updateUser(user);
@@ -190,6 +191,9 @@ public class UserGrpcService extends UserGrpcServiceGrpc.UserGrpcServiceImplBase
                     .setUsername(user.get().getUsername()).setBiography(user.get().getBiography())
                     .addAllExperiences(experiences).addAllInterests(interests)
                     .setProfilePublic(user.get().isPublicProfile())
+                    .setMuteConnectionsNotifications(user.get().isMuteConnectionsNotifications())
+                    .setMuteMessageNotifications(user.get().isMuteMassageNotifications())
+                    .setMutePostNotifications(user.get().isMutePostNotifications())
                     .build();
             responseProto = UserResponseProto.newBuilder().setUser(userProto).setStatus(OK_STATUS).build();
             loggerService.getUserById(user.get().getEmail());

@@ -35,6 +35,10 @@ public class NotificationServiceImpl implements NotificationService {
     	notification.setCreationTime();
         Optional<User> user = userService.findById(userId);
         if(user.isEmpty()) throw new UserNotFoundException();
+        if(user.get().isMuteMassageNotifications() && notification.getText().contains("post"))
+            return null;
+        if(user.get().isMuteConnectionsNotifications() && notification.getText().contains("connect"))
+            return null;
         Notification savedNotification = repository.save(notification);
         UserNotification userNotification = new UserNotification(user.get(), notification, false);
         userNotificationRepository.save(userNotification);
@@ -49,6 +53,8 @@ public class NotificationServiceImpl implements NotificationService {
     		Optional<User> user = userService.findById(userId);
             if(user.isEmpty()) throw new UserNotFoundException();
             UserNotification userNotification = new UserNotification(user.get(), notification, false);
+            if(user.get().isMutePostNotifications())
+                continue;
             userNotificationRepository.save(userNotification);
     	}
         return savedNotification;
