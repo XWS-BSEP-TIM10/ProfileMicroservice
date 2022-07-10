@@ -177,4 +177,10 @@ public class LoggerServiceImpl implements LoggerService {
 	 public void updateUserBadDate(String id) {
 		 logger.warn("Failed to update information for a user with id: {} because date was malformatted", id);
 	 }
+
+	@Override
+	public void unsuccessfulRegistration(String userId) {
+		logger.error("User registration failed. User id: {}", userId);
+	}
+
 }
