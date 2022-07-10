@@ -24,13 +24,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User create(User user) {
-        if (userRepository.findByUsername(user.getUsername()) != null) {
+        try {
+            if (userRepository.findByUsername(user.getUsername()) != null) {
+                return null;
+            }
+            if (userRepository.findById(user.getId()).isPresent()) {
+                return updateProfileUser(user);
+            }
+            return userRepository.save(user);
+        }catch(Exception ex){
             return null;
         }
-        if (userRepository.findById(user.getId()).isPresent()) {
-            return updateProfileUser(user);
-        }
-        return userRepository.save(user);
     }
 
     private User updateProfileUser(User user) {
@@ -94,12 +98,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User update(User user) {
-        Optional<User> existingUser = userRepository.findById(user.getId());
-        if (existingUser.isEmpty()) return null;
-        user.setId(existingUser.get().getId());
-        user.setExperiences(existingUser.get().getExperiences());
-        user.setInterests(existingUser.get().getInterests());
-        return userRepository.save(user);
+        try {
+            Optional<User> existingUser = userRepository.findById(user.getId());
+            if (existingUser.isEmpty()) return null;
+            user.setId(existingUser.get().getId());
+            user.setExperiences(existingUser.get().getExperiences());
+            user.setInterests(existingUser.get().getInterests());
+            return userRepository.save(user);
+        }catch(Exception e){
+            return null;
+        }
     }
 
     @Override

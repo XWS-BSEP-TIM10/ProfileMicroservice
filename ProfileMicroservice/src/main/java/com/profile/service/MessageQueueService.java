@@ -9,6 +9,7 @@ import com.profile.model.User;
 import com.profile.saga.dto.OrchestratorResponseDTO;
 import com.profile.saga.dto.UpdateUserDTO;
 import com.profile.saga.dto.UpdateUserStatusDTO;
+import com.profile.service.impl.LoggerServiceImpl;
 import io.nats.client.Connection;
 import io.nats.client.Dispatcher;
 import io.nats.client.Nats;
@@ -23,9 +24,12 @@ public class MessageQueueService {
 
     private Connection nats;
 
+    private final LoggerService loggerService;
+
     private final UserService userService;
 
     public MessageQueueService(UserService userService) {
+        this.loggerService = new LoggerServiceImpl(this.getClass());
         this.userService = userService;
         try {
             String natsURI = System.getenv("NATS_URI") == null ? "localhost" : System.getenv("NATS_URI");
@@ -53,11 +57,12 @@ public class MessageQueueService {
 
             User user = userService.create(new User(newUserDTO));
             AuthSagaResponseDTO responseDto;
-            if (user == null)
+            if (user == null) {
                 responseDto = new AuthSagaResponseDTO(false, "failed", newUserDTO.getUuid());
-            else
+                loggerService.unsuccessfulRegistration(newUserDTO.getUuid());
+            }else {
                 responseDto = new AuthSagaResponseDTO(user.getId(), true, "success", newUserDTO);
-
+            }
             publishResponseForCreateUser(responseDto);
         });
     }

@@ -33,4 +33,5 @@ public interface LoggerService {
 	void updateUserNotFound(String id);
 	void updateUserUsernameAlreadyExists(String id, String username);
 	void updateUserBadDate(String id);
+	void unsuccessfulRegistration(String id);
 }
